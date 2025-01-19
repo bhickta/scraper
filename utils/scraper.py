@@ -10,7 +10,7 @@ from core import (
 )
 
 
-class InsightScraper:
+class Scraper:
     def __init__(self, **kwargs):
         self.base_url = kwargs.get('base_url').strip()
         self.ua = UserAgent()
@@ -47,7 +47,7 @@ class InsightScraper:
             raise
 
 
-class QuestionInsights(InsightScraper):
+class QuestionInsights(Scraper):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -68,7 +68,7 @@ class QuestionInsights(InsightScraper):
         return questions
 
 
-class SecureInsightsUrl(InsightScraper):
+class SecureInsightsUrl(Scraper):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.urls = []
@@ -77,3 +77,41 @@ class SecureInsightsUrl(InsightScraper):
         month_url = self.soup.select(".entry-content a")
         month_url = [url.get("href") for url in month_url]
         self.urls.extend(month_url)
+
+class MicroTopicsIasscoreUrls(Scraper):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.urls = []
+    
+    def parse_page(self):
+        subject_url = self.soup.select('li[class=""] > a')
+        subject_url = ["https://iasscore.in" + url.get("href") for url in subject_url]
+        self.urls.extend(subject_url)
+
+class MicroTopicsIasscore(Scraper):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+    
+    def parse_page(self):
+        self.topics = []
+        subject, section = [(" ").join(t.split("-")).title() for t in self.base_url.split("/")[-2:]]
+        bricks = self.soup.select('.brick')
+        for brick in bricks:
+            topic = brick.select_one('.title').text.strip()
+            themes = [li.text.strip() for li in brick.select('.sections ul li')]
+            for theme in themes:
+                key = {
+                    "subject": subject,
+                    "section": section,
+                    "topic": topic,
+                    "theme": theme
+                }
+                hassubtheme = theme.split("\n\n")
+                if len(hassubtheme) > 1:
+                    subtheme = hassubtheme[1]
+                    theme = hassubtheme[0]
+                    key.update({
+                        "theme": theme,
+                        "subtheme": subtheme
+                    })
+                self.topics.append(key)
