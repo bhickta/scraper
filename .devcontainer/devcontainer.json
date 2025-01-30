@@ -21,6 +21,6 @@
     "workspaceFolder": "/workspaces/scraper",
     "shutdownAction": "stopCompose",
     "mounts": [
-        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/frappe/.ssh,type=bind,consistency=cached"
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
     ]
 }
