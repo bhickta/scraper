@@ -12,7 +12,8 @@ from core import (
 
 class Scraper:
     def __init__(self, **kwargs):
-        self.base_url = kwargs.get('base_url').strip()
+        self.base_url = kwargs.get('base_url').strip() if kwargs.get('base_url') else None
+        self.content = kwargs.get('content')
         self.ua = UserAgent()
         self.session = requests.Session()
 
@@ -37,9 +38,9 @@ class Scraper:
     def pre_parse(self, html_content):
         self.soup = BeautifulSoup(html_content, "html.parser")
 
-    def scrape(self):
+    def scrape(self, content=None):
         try:
-            html_content = self.fetch_page()
+            html_content = self.content or content or self.fetch_page()
             self.pre_parse(html_content)
             return self.parse_page()
         except RetryError as e:
@@ -69,6 +70,16 @@ class QuestionInsights(Scraper):
 
 
 class SecureInsightsUrl(Scraper):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.urls = []
+
+    def parse_page(self):
+        month_url = self.soup.select(".entry-content a")
+        month_url = [url.get("href") for url in month_url]
+        self.urls.extend(month_url)
+
+class SecureQuizUrl(Scraper):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.urls = []
