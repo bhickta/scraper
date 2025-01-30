@@ -7,6 +7,7 @@ from core import (
     logger,
     requests,
     BeautifulSoup,
+    re
 )
 
 
@@ -47,6 +48,47 @@ class Scraper:
             logger.error(f"Retries failed for {self.base_url}. Error: {str(e)}")
             raise
 
+class MCQInsights(Scraper):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def parse_page(self):
+        self.scraped_data = []
+        questions = self.get_questions()
+        self.scraped_data.append(questions)
+
+    def get_questions(self):
+        quiz_list_items = self.soup.select('.wpProQuiz_listItem')
+        questions = []
+
+        option_labels = ["a", "b", "c", "d", "e", "f"]
+
+        for item in quiz_list_items:
+            question = item.select_one('.wpProQuiz_question_text').text.strip()
+            options = [itm.text.strip() for itm in item.select('.wpProQuiz_questionListItem')]
+            explaination = item.select_one(".wpProQuiz_response").text
+            correct_answer_element = item.select_one(".wpProQuiz_correct p")
+            answer = ""
+            if correct_answer_element:
+                correct_answer_text = correct_answer_element.text.strip()
+                match = re.search(r"(?:Ans:|Solution:)\s*\(?([a-dA-D])\)?", correct_answer_text)
+                if match:
+                    answer = match.group(1).lower() 
+
+            ret = {
+                "question": question,
+                "answer": answer,
+                "explaination": explaination,
+            }
+
+            for idx, option in enumerate(options):
+                if idx < len(option_labels):
+                    ret[option_labels[idx]] = option
+
+            questions.append(ret)
+
+        return questions
+
 
 class QuestionInsights(Scraper):
     def __init__(self, **kwargs):
@@ -85,7 +127,8 @@ class SecureQuizUrl(Scraper):
         self.urls = []
 
     def parse_page(self):
-        month_url = self.soup.select(".entry-content a")
+        soup = self.soup.select_one(".row")
+        month_url = soup.select(".entry-content a")
         month_url = [url.get("href") for url in month_url]
         self.urls.extend(month_url)
 
