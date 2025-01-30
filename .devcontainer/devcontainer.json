@@ -18,5 +18,9 @@
     "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt",
     "remoteUser": "vscode",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/scraper,type=bind",
-    "workspaceFolder": "/workspaces/scraper"
+    "workspaceFolder": "/workspaces/scraper",
+    "shutdownAction": "stopCompose",
+    "mounts": [
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/frappe/.ssh,type=bind,consistency=cached"
+    ]
 }
