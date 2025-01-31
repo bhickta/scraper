@@ -1,7 +1,7 @@
 from utils.scraper import SecureQuizUrl, MCQInsights
 import csv
 
-csv_file = "./data/rtm_secure.csv"
+csv_file = "./data/insta_dart.csv"
 
 
 def main():
@@ -45,10 +45,11 @@ def get_url_csv():
         # "https://www.insightsonindia.com/upsc-daily-static-quiz/?lcp_page0=2#lcp_instance_0",
         # "https://www.insightsonindia.com/upsc-daily-static-quiz/?lcp_page0=3#lcp_instance_0",
         # "https://www.insightsonindia.com/upsc-daily-static-quiz/?lcp_page0=4#lcp_instance_0",
-        "https://www.insightsonindia.com/insights-current-affairs-revision-through-daily-mcqs/?lcp_page0=1#lcp_instance_0",
-        "https://www.insightsonindia.com/insights-current-affairs-revision-through-daily-mcqs/?lcp_page0=2#lcp_instance_0",
-        "https://www.insightsonindia.com/insights-current-affairs-revision-through-daily-mcqs/?lcp_page0=3#lcp_instance_0",
-        "https://www.insightsonindia.com/insights-current-affairs-revision-through-daily-mcqs/?lcp_page0=4#lcp_instance_0",
+        # "https://www.insightsonindia.com/insights-current-affairs-revision-through-daily-mcqs/?lcp_page0=1#lcp_instance_0",
+        # "https://www.insightsonindia.com/insights-current-affairs-revision-through-daily-mcqs/?lcp_page0=2#lcp_instance_0",
+        # "https://www.insightsonindia.com/insights-current-affairs-revision-through-daily-mcqs/?lcp_page0=3#lcp_instance_0",
+        # "https://www.insightsonindia.com/insights-current-affairs-revision-through-daily-mcqs/?lcp_page0=4#lcp_instance_0",
+        "https://www.insightsonindia.com/insta-dart/",
     ]
     scraped_urls = []
     existing_urls = set()  # Use a set for efficient checking of existing URLs
