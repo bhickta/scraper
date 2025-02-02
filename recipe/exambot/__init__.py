@@ -1,4 +1,4 @@
-from .db import GenericDatabase
+from ...core.db import GenericDatabase
 from .scrape import ExamBot
 import json
 
@@ -14,7 +14,7 @@ def main():
         file.seek(0, 2)  # Move the cursor to the end of the file
         if file.tell() == 0:
             file.write("[\n")  # Start the array
-        
+
         for explaination in explainations:
             page_no, row_index, html = explaination
             scraper = ExamBot(content=html)
@@ -30,11 +30,11 @@ def main():
             print(data.get("metadata"))
             # Write each data object
             json.dump(data, file, ensure_ascii=False, indent=4)
-            
+
             # Write a comma if it's not the last item
             if explaination != explainations[-1]:
                 file.write(",\n")
-        
+
         # Close the array
         file.write("\n]")
 

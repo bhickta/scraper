@@ -1,11 +1,13 @@
-from utils.scraper import SecureQuizUrl, MCQInsights
+from utils.scraper import SecureQuizUrl, MCQInsights, Scraper
 import csv
+from core.db import GenericDatabase, String
 
-csv_file = "./data/insta_dart.csv"
+source = "insta_dart"
+csv_file = f"./data/{source}.csv"
 
 
 def main():
-    get_url_csv()
+    html_to_db()
     return
 
     # Loop over the range from 1 to 4000, stepping by 50 to create pairs (1, 2), (50, 51), (100, 101), ...
@@ -19,18 +21,38 @@ def main():
             scraper.scrape()
             # Check if there's any scraped data and print the answer
             if scraper.scraped_data:
-                print(scraper.scraped_data[0][0].get("answer", "No answer found"))
+                print(scraper.scraped_data[0][0].get(
+                    "answer", "No answer found"))
             else:
                 print(f"No data scraped from {url}")
 
 
-def get_url(start, end):
+def html_to_db():
+    urls = get_url()
+    print(len(urls))
+    db = GenericDatabase(f"sqlite:///data/{source}.db")
+    db.create_table_if_not_exists(source, {"url": String, "html": String})
+    for url in urls:
+        scraper = Scraper(base_url=url)
+        scraper.scrape()
+        html = scraper.get_html()
+        db.insert(source, {"url": url, "html": html}, unique_field="url")
+
+
+def get_url(start=None, end=None):
     """Fetch a range of URLs from the stored CSV file."""
     try:
         with open(csv_file, mode="r", newline="", encoding="utf-8") as file:
-            return file.readlines()[
-                start:end
-            ]  # Read the lines between start and end indices
+            lines = file.readlines()  # Read once and store
+
+            # Set default values for start and end
+            start = 0 if start is None else start - 1  # Convert to 0-based index
+            # Ensure end is within range
+            end = len(lines) if end is None else end
+
+            print(f"Fetching lines {start + 1} to {end}")  # Debug output
+            return lines[start:end]  # Return the sliced lines
+
     except FileNotFoundError:
         print("CSV file not found.")
         return []
@@ -49,7 +71,7 @@ def get_url_csv():
         # "https://www.insightsonindia.com/insights-current-affairs-revision-through-daily-mcqs/?lcp_page0=2#lcp_instance_0",
         # "https://www.insightsonindia.com/insights-current-affairs-revision-through-daily-mcqs/?lcp_page0=3#lcp_instance_0",
         # "https://www.insightsonindia.com/insights-current-affairs-revision-through-daily-mcqs/?lcp_page0=4#lcp_instance_0",
-        "https://www.insightsonindia.com/insta-dart/",
+        # "https://www.insightsonindia.com/insta-dart/",
     ]
     scraped_urls = []
     existing_urls = set()  # Use a set for efficient checking of existing URLs
@@ -88,11 +110,13 @@ def get_url_csv():
                 writer.writerow(["URL"])  # Add header
                 for (
                     url
-                ) in existing_urls:  # Write all unique URLs (including existing ones)
+                    # Write all unique URLs (including existing ones)
+                ) in existing_urls:
                     writer.writerow([url])
             print(f"URLs saved to {csv_file}")
         else:
-            print("No new unique URLs to add.")  # If no new url is there to add
+            # If no new url is there to add
+            print("No new unique URLs to add.")
 
     except Exception as e:
         print(f"Error: {e}")

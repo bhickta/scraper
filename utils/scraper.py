@@ -13,7 +13,8 @@ from core import (
 
 class Scraper:
     def __init__(self, **kwargs):
-        self.base_url = kwargs.get('base_url').strip() if kwargs.get('base_url') else None
+        self.base_url = kwargs.get('base_url').strip(
+        ) if kwargs.get('base_url') else None
         self.content = kwargs.get('content')
         self.ua = UserAgent()
         self.session = requests.Session()
@@ -28,10 +29,12 @@ class Scraper:
 
         if response.status_code != 200:
             logger.error(
-                f"Failed to fetch the page: {self.base_url} (Status Code: {response.status_code})"
+                f"Failed to fetch the page: {
+                    self.base_url} (Status Code: {response.status_code})"
             )
             raise Exception(
-                f"Failed to fetch the page: {self.base_url} (Status Code: {response.status_code})"
+                f"Failed to fetch the page: {
+                    self.base_url} (Status Code: {response.status_code})"
             )
 
         return response.text
@@ -45,8 +48,16 @@ class Scraper:
             self.pre_parse(html_content)
             return self.parse_page()
         except RetryError as e:
-            logger.error(f"Retries failed for {self.base_url}. Error: {str(e)}")
+            logger.error(f"Retries failed for {
+                         self.base_url}. Error: {str(e)}")
             raise
+
+    def parse_page(self):
+        pass
+
+    def get_html(self):
+        return self.soup.prettify()
+
 
 class MCQInsights(Scraper):
     def __init__(self, **kwargs):
@@ -65,15 +76,17 @@ class MCQInsights(Scraper):
 
         for item in quiz_list_items:
             question = item.select_one('.wpProQuiz_question_text').text.strip()
-            options = [itm.text.strip() for itm in item.select('.wpProQuiz_questionListItem')]
+            options = [itm.text.strip()
+                       for itm in item.select('.wpProQuiz_questionListItem')]
             explaination = item.select_one(".wpProQuiz_response").text
             correct_answer_element = item.select_one(".wpProQuiz_correct p")
             answer = ""
             if correct_answer_element:
                 correct_answer_text = correct_answer_element.text.strip()
-                match = re.search(r"(?:Ans:|Solution:)\s*\(?([a-dA-D])\)?", correct_answer_text)
+                match = re.search(
+                    r"(?:Ans:|Solution:)\s*\(?([a-dA-D])\)?", correct_answer_text)
                 if match:
-                    answer = match.group(1).lower() 
+                    answer = match.group(1).lower()
 
             ret = {
                 "question": question,
@@ -121,6 +134,7 @@ class SecureInsightsUrl(Scraper):
         month_url = [url.get("href") for url in month_url]
         self.urls.extend(month_url)
 
+
 class SecureQuizUrl(Scraper):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -132,27 +146,32 @@ class SecureQuizUrl(Scraper):
         month_url = [url.get("href") for url in month_url]
         self.urls.extend(month_url)
 
+
 class MicroTopicsIasscoreUrls(Scraper):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.urls = []
-    
+
     def parse_page(self):
         subject_url = self.soup.select('li[class=""] > a')
-        subject_url = ["https://iasscore.in" + url.get("href") for url in subject_url]
+        subject_url = ["https://iasscore.in" +
+                       url.get("href") for url in subject_url]
         self.urls.extend(subject_url)
+
 
 class MicroTopicsIasscore(Scraper):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-    
+
     def parse_page(self):
         self.topics = []
-        subject, section = [(" ").join(t.split("-")).title() for t in self.base_url.split("/")[-2:]]
+        subject, section = [(" ").join(t.split("-")).title()
+                            for t in self.base_url.split("/")[-2:]]
         bricks = self.soup.select('.brick')
         for brick in bricks:
             topic = brick.select_one('.title').text.strip()
-            themes = [li.text.strip() for li in brick.select('.sections ul li')]
+            themes = [li.text.strip()
+                      for li in brick.select('.sections ul li')]
             for theme in themes:
                 key = {
                     "subject": subject,

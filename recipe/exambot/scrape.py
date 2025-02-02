@@ -42,16 +42,16 @@ class ExamBot(Scraper):
 
                 options.append({"value": value, "label": label_text})
 
-            data.update(
-                {
-                    "subject": subject.text.strip() if subject else "",
-                    "question": (
-                        question_statement.text.strip() if question_statement else ""
-                    ),
-                    "correct_option": correct_option,
-                    "explaination": explaination.text.strip() if explaination else "",
-                    "options": options,
-                }
-            )
+        data.update(
+            {
+                "subject": subject.text.strip() if subject else "",
+                "question": (
+                    question_statement.text.strip() if question_statement else ""
+                ),
+                "correct_option": correct_option,
+                "explaination": explaination.text.strip() if explaination else "",
+                "options": options,
+            }
+        )
 
         return data
