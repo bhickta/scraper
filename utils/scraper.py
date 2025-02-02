@@ -68,6 +68,31 @@ class MCQInsights(Scraper):
         questions = self.get_questions()
         self.scraped_data.append(questions)
 
+    def build_answer_pattern(self):
+        parts = []
+
+        parts.append(r"(?:Ans\s*[:\.\-]\s*")  # Ans., Ans:, Ans-
+        parts.append(r"Ans-\.\s*")
+        parts.append(r"Solution[:\-]\s*")  # Solution:
+        parts.append(r"Correct\s*Option[:\-]?\s*")
+        parts.append(r"Correct\s*[:\-]?\s*")
+        parts.append(r"Answeer\s*[:\-]?\s*")
+        parts.append(r"Sol[:\.\-]\s*")  # Handling Sol. format
+
+        parts.append(r"Correct\s*Answer[:\-]?\s*")
+        parts.append(r"Answer\s*[:\-]?\s*")  # Answer: or Answer -
+        parts.append(r"Sol\s*[:\-]?\s*")  # Sol: or Sol -
+        parts.append(r"SOLUTION[:\-]\s*")  # Handling SOLUTION: format
+        # Handling Ans. 1), Ans- 1), Ans: 1), etc.
+        parts.append(r"Ans[:\.\-]\s*\d\)\s*")
+
+        start_part = "|".join(parts)
+
+        end_part = r"\s*(?:\(?([a-dA-D])\)?)"
+
+        regex = start_part + r")\s*" + end_part
+        return regex
+
     def get_questions(self):
         quiz_list_items = self.soup.select('.wpProQuiz_listItem')
         questions = []
@@ -83,10 +108,17 @@ class MCQInsights(Scraper):
             answer = ""
             if correct_answer_element:
                 correct_answer_text = correct_answer_element.text.strip()
-                match = re.search(
-                    r"(?:Ans:|Solution:)\s*\(?([a-dA-D])\)?", correct_answer_text)
-                if match:
+
+                regex = self.build_answer_pattern()
+                match = re.search(regex, correct_answer_text)
+
+                if match and match.group(1):
                     answer = match.group(1).lower()
+                    print("Answer:", answer)
+                else:
+                    print("Could not extract answer from:", correct_answer_text)
+                    raise Exception(f"Could not extract answer from: {
+                        correct_answer_text}")
 
             ret = {
                 "question": question,
