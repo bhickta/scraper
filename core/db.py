@@ -90,3 +90,14 @@ class GenericDatabase:
             )
             table.create(self.engine)
             self.metadata.reflect(bind=self.engine)
+
+    def url_exists(self, table_name, url):
+        """Check if a given URL already exists in the database."""
+        table = self.get_table(table_name)
+        exits = self.session.query(table).filter(
+            table.c.url == url).first() is not None
+        return exits
+
+    def close(self):
+        self.session.close()
+        self.engine.dispose()

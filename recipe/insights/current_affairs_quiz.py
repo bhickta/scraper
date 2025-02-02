@@ -1,3 +1,5 @@
+import time
+from tqdm import tqdm
 from utils.scraper import SecureQuizUrl, MCQInsights, Scraper
 import csv
 from core.db import GenericDatabase, String
@@ -10,33 +12,30 @@ def main():
     html_to_db()
     return
 
-    # Loop over the range from 1 to 4000, stepping by 50 to create pairs (1, 2), (50, 51), (100, 101), ...
-    for start in range(1, 4001, 50):
-        end = start + 1  # The end index is always 1 greater than the start index
-        # Fetch the URLs from the CSV based on the current start and end
-        urls = get_url(start, end)
-
-        for url in urls:  # Process each URL fetched
-            scraper = MCQInsights(base_url=url)
-            scraper.scrape()
-            # Check if there's any scraped data and print the answer
-            if scraper.scraped_data:
-                print(scraper.scraped_data[0][0].get(
-                    "answer", "No answer found"))
-            else:
-                print(f"No data scraped from {url}")
-
 
 def html_to_db():
     urls = get_url()
-    print(len(urls))
     db = GenericDatabase(f"sqlite:///data/{source}.db")
     db.create_table_if_not_exists(source, {"url": String, "html": String})
-    for url in urls:
-        scraper = Scraper(base_url=url)
-        scraper.scrape()
-        html = scraper.get_html()
-        db.insert(source, {"url": url, "html": html}, unique_field="url")
+
+    total_urls = len(urls)
+    start_time = time.time()
+
+    with tqdm(total=total_urls, desc="Processing URLs", unit="url") as pbar:
+        for index, url in enumerate(urls, start=1):
+            # Update progress bar with estimated time left
+            elapsed_time = time.time() - start_time
+            avg_time_per_url = elapsed_time / index
+            remaining_time = avg_time_per_url * (total_urls - index)
+
+            pbar.set_postfix({"ETA": f"{remaining_time:.2f} sec"})
+            pbar.update(1)
+            if db.url_exists(source, url):
+                continue
+            scraper = Scraper(base_url=url)
+            scraper.scrape()
+            html = scraper.get_html()
+            db.insert(source, {"url": url, "html": html}, unique_field="url")
 
 
 def get_url(start=None, end=None):
