@@ -6,11 +6,48 @@ from core.db import GenericDatabase, String
 
 source = "insta_dart"
 csv_file = f"./data/{source}.csv"
+ouput_file = f"./data/{source}_output.csv"
 
 
 def main():
-    html_to_db()
+    to_csv(ouput_file)
     return
+
+
+def to_csv(output_file):
+    db = GenericDatabase(f"sqlite:///data/{source}.db")
+
+    with open(output_file, mode="w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+
+        writer.writerow(
+            ["question", "answer", "explanation", "a", "b", "c", "d", "e", "f", "source"])
+
+        for url, html in db.get_urls_and_html(source):
+            scraper = MCQInsights(base_url=url)
+            scraper.scrape(content=html)
+
+            questions = scraper.scraped_data[0] if scraper.scraped_data else []
+
+            if not questions:
+                print(f"No questions found for {url}")
+                continue  # Skip if no questions found
+
+            print(f"Extracted {len(questions)} questions from {url}")
+
+            for question in questions:
+                writer.writerow([
+                    question.get("question", ""),
+                    question.get("answer", ""),
+                    question.get("explaination", ""),
+                    question.get("a", ""),
+                    question.get("b", ""),
+                    question.get("c", ""),
+                    question.get("d", ""),
+                    question.get("e", ""),
+                    question.get("f", ""),
+                    url
+                ])
 
 
 def html_to_db():

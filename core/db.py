@@ -13,6 +13,15 @@ class GenericDatabase:
     def get_table(self, table_name):
         return Table(table_name, self.metadata, autoload_with=self.engine)
 
+    def get_urls_and_html(self, table_name):
+        """Generator to fetch URLs and HTML one by one."""
+        table = self.get_table(table_name)
+        # Fetch only required columns
+        query = self.session.query(table.c.url, table.c.html)
+
+        for row in query:
+            yield row.url, row.html
+
     def query_with_filters(self, table_name, filters=None, conjunction="and", limit=None, offset=None):
         table = self.get_table(table_name)
         query = self.session.query(table)
