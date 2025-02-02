@@ -33,8 +33,6 @@ def to_csv(output_file):
                 print(f"No questions found for {url}")
                 continue  # Skip if no questions found
 
-            print(f"Extracted {len(questions)} questions from {url}")
-
             for question in questions:
                 writer.writerow([
                     question.get("question", ""),

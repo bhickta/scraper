@@ -71,26 +71,59 @@ class MCQInsights(Scraper):
     def build_answer_pattern(self):
         parts = []
 
-        parts.append(r"(?:Ans\s*[:\.\-]\s*")  # Ans., Ans:, Ans-
+        parts.append(r"Ans\s*[:\.\-]\s*")  # Ans., Ans:, Ans-
         parts.append(r"Ans-\.\s*")
         parts.append(r"Solution[:\-]\s*")  # Solution:
         parts.append(r"Correct\s*Option[:\-]?\s*")
         parts.append(r"Correct\s*[:\-]?\s*")
         parts.append(r"Answeer\s*[:\-]?\s*")
         parts.append(r"Sol[:\.\-]\s*")  # Handling Sol. format
-
         parts.append(r"Correct\s*Answer[:\-]?\s*")
         parts.append(r"Answer\s*[:\-]?\s*")  # Answer: or Answer -
         parts.append(r"Sol\s*[:\-]?\s*")  # Sol: or Sol -
         parts.append(r"SOLUTION[:\-]\s*")  # Handling SOLUTION: format
-        # Handling Ans. 1), Ans- 1), Ans: 1), etc.
-        parts.append(r"Ans[:\.\-]\s*\d\)\s*")
+        parts.append(r"Ans[:\.\-]\s*(?:\d+\)\s*)?")  # Number is optional
 
         start_part = "|".join(parts)
 
-        end_part = r"\s*(?:\(?([a-dA-D])\)?)"
+        # Capture the option (in parentheses or without parentheses)
+        option_part = r"\s*(?:\(?([a-dA-D])\)?)*"
 
-        regex = start_part + r")\s*" + end_part
+        # Capture the remaining text (non-greedy)
+        remaining_part = r"(.*)"
+
+        regex = r"(" + start_part + r")" + option_part + \
+            remaining_part  # Group everything
+
+        return regex
+
+    def build_answer_pattern(self):
+        parts = []
+
+        parts.append(r"Ans\s*[:\.\-]\s*")  # Ans., Ans:, Ans-
+        parts.append(r"Ans-\.\s*")
+        parts.append(r"Solution[:\-]\s*")  # Solution:
+        parts.append(r"Correct\s*Option[:\-]?\s*")
+        parts.append(r"Correct\s*[:\-]?\s*")
+        parts.append(r"Answeer\s*[:\-]?\s*")
+        parts.append(r"Sol[:\.\-]\s*")  # Handling Sol. format
+        parts.append(r"Correct\s*Answer[:\-]?\s*")
+        parts.append(r"Answer\s*[:\-]?\s*")  # Answer: or Answer -
+        parts.append(r"Sol\s*[:\-]?\s*")  # Sol: or Sol -
+        parts.append(r"SOLUTION[:\-]\s*")  # Handling SOLUTION: format
+        parts.append(r"Ans[:\.\-]\s*(?:\d+\)\s*)?")  # Number is optional
+
+        start_part = "|".join(parts)
+
+        # Capture the option (in parentheses or without parentheses)
+        option_part = r"\s*(?:\(?([a-dA-D])\)?)*"
+
+        # Capture the remaining text (non-greedy)
+        remaining_part = r"(.*)"
+
+        regex = r"(" + start_part + r")" + option_part + \
+            remaining_part  # Group everything
+
         return regex
 
     def get_questions(self):
@@ -98,7 +131,6 @@ class MCQInsights(Scraper):
         questions = []
 
         option_labels = ["a", "b", "c", "d", "e", "f"]
-
         for item in quiz_list_items:
             question = item.select_one('.wpProQuiz_question_text').text.strip()
             options = [itm.text.strip()
@@ -113,12 +145,9 @@ class MCQInsights(Scraper):
                 match = re.search(regex, correct_answer_text)
 
                 if match and match.group(1):
-                    answer = match.group(1).lower()
-                    print("Answer:", answer)
-                else:
-                    print("Could not extract answer from:", correct_answer_text)
-                    raise Exception(f"Could not extract answer from: {
-                        correct_answer_text}")
+                    answer_group = match.group(2)
+                    if answer_group:
+                        answer = answer_group.lower()
 
             ret = {
                 "question": question,
