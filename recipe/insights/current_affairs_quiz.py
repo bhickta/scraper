@@ -4,7 +4,7 @@ from utils.scraper import SecureQuizUrl, MCQInsights, Scraper
 import csv
 from core.db import GenericDatabase, String
 
-source = "static_quiz_secure"
+source = "current"
 csv_file = f"./data/{source}.csv"
 ouput_file = f"./data/{source}_outputs.csv"
 
@@ -17,7 +17,8 @@ def main():
 
 
 def to_csv(output_file):
-    db = GenericDatabase(f"sqlite:///data/{source}.db")
+    db_path = f"sqlite:///data/{source}.db"
+    db = GenericDatabase(db_path)
 
     with open(output_file, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
@@ -25,7 +26,7 @@ def to_csv(output_file):
         writer.writerow(
             ["question", "answer", "explanation", "a", "b", "c", "d", "e", "f", "source"])
 
-        for url, html in db.get_urls_and_html(source):
+        for url, html in db.get_urls_and_html("scraped_html"):
             scraper = MCQInsights(base_url=url)
             scraper.scrape(content=html)
 
