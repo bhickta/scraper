@@ -4,12 +4,14 @@ from utils.scraper import SecureQuizUrl, MCQInsights, Scraper
 import csv
 from core.db import GenericDatabase, String
 
-source = "insta_dart"
+source = "static_quiz_secure"
 csv_file = f"./data/{source}.csv"
-ouput_file = f"./data/{source}_output.csv"
+ouput_file = f"./data/{source}_outputs.csv"
 
 
 def main():
+    to_csv(ouput_file)
+    return
     to_csv(ouput_file)
     return
 
@@ -30,14 +32,13 @@ def to_csv(output_file):
             questions = scraper.scraped_data[0] if scraper.scraped_data else []
 
             if not questions:
-                print(f"No questions found for {url}")
                 continue  # Skip if no questions found
 
             for question in questions:
                 writer.writerow([
                     question.get("question", ""),
                     question.get("answer", ""),
-                    question.get("explaination", ""),
+                    question.get("explanation", ""),
                     question.get("a", ""),
                     question.get("b", ""),
                     question.get("c", ""),
@@ -61,9 +62,9 @@ def html_to_db():
             # Update progress bar with estimated time left
             elapsed_time = time.time() - start_time
             avg_time_per_url = elapsed_time / index
-            remaining_time = avg_time_per_url * (total_urls - index)
+            remaining_time = (avg_time_per_url * (total_urls - index)) / 3600
 
-            pbar.set_postfix({"ETA": f"{remaining_time:.2f} sec"})
+            pbar.set_postfix({"ETA": f"{remaining_time:.2f} hrs"})
             pbar.update(1)
             if db.url_exists(source, url):
                 continue

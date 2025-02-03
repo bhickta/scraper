@@ -1,3 +1,4 @@
+import re
 from core import (
     UserAgent,
     retry,
@@ -7,7 +8,8 @@ from core import (
     logger,
     requests,
     BeautifulSoup,
-    re
+    re,
+    json
 )
 
 
@@ -73,11 +75,12 @@ class MCQInsights(Scraper):
 
         parts.append(r"Ans\s*[:\.\-]\s*")  # Ans., Ans:, Ans-
         parts.append(r"Ans-\.\s*")
-        parts.append(r"Solution[:\-]\s*")  # Solution:
+        parts.append(r"Solution\s*[:\-\n]*")
         parts.append(r"Correct\s*Option[:\-]?\s*")
         parts.append(r"Correct\s*[:\-]?\s*")
         parts.append(r"Answeer\s*[:\-]?\s*")
         parts.append(r"Sol[:\.\-]\s*")  # Handling Sol. format
+        parts.append(r"उत्तर\s*[:\-]?\s*")
         parts.append(r"Correct\s*Answer[:\-]?\s*")
         parts.append(r"Answer\s*[:\-]?\s*")  # Answer: or Answer -
         parts.append(r"Sol\s*[:\-]?\s*")  # Sol: or Sol -
@@ -97,62 +100,62 @@ class MCQInsights(Scraper):
 
         return regex
 
-    def build_answer_pattern(self):
-        parts = []
+    def normalize_whitespace(self, text):
+        return re.sub(r'(\s)\1+', r'\1', text).strip()
 
-        parts.append(r"Ans\s*[:\.\-]\s*")  # Ans., Ans:, Ans-
-        parts.append(r"Ans-\.\s*")
-        parts.append(r"Solution[:\-]\s*")  # Solution:
-        parts.append(r"Correct\s*Option[:\-]?\s*")
-        parts.append(r"Correct\s*[:\-]?\s*")
-        parts.append(r"Answeer\s*[:\-]?\s*")
-        parts.append(r"Sol[:\.\-]\s*")  # Handling Sol. format
-        parts.append(r"Correct\s*Answer[:\-]?\s*")
-        parts.append(r"Answer\s*[:\-]?\s*")  # Answer: or Answer -
-        parts.append(r"Sol\s*[:\-]?\s*")  # Sol: or Sol -
-        parts.append(r"SOLUTION[:\-]\s*")  # Handling SOLUTION: format
-        parts.append(r"Ans[:\.\-]\s*(?:\d+\)\s*)?")  # Number is optional
+    def extract_correct_answers(self):
+        script_tag = self.soup.find('script', type='text/javascript',
+                                    string=lambda text: "wpProQuizInitList" in text if text else False)
 
-        start_part = "|".join(parts)
+        if script_tag:
+            script_content = script_tag.string
+            start = script_content.find("json:") + len("json:")
+            end = script_content.find("}}", start) + 2
 
-        # Capture the option (in parentheses or without parentheses)
-        option_part = r"\s*(?:\(?([a-dA-D])\)?)*"
+            json_str = script_content[start:end]
 
-        # Capture the remaining text (non-greedy)
-        remaining_part = r"(.*)"
+            try:
+                data = json.loads(json_str)
+                correct_answers = []
+                for question_id, details in data.items():
+                    correct_index = details['correct'].index(1)
+                    correct_answers.append(correct_index)
+                return correct_answers
 
-        regex = r"(" + start_part + r")" + option_part + \
-            remaining_part  # Group everything
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON: {e}")
+                print("Raw JSON String:", json_str)
+                return None  # Return None to indicate an error
 
-        return regex
+        else:
+            print("Script tag not found.")
+            return None  # Return None if the script tag is not found
 
     def get_questions(self):
         quiz_list_items = self.soup.select('.wpProQuiz_listItem')
         questions = []
-
         option_labels = ["a", "b", "c", "d", "e", "f"]
-        for item in quiz_list_items:
-            question = item.select_one('.wpProQuiz_question_text').text.strip()
-            options = [itm.text.strip()
-                       for itm in item.select('.wpProQuiz_questionListItem')]
-            explaination = item.select_one(".wpProQuiz_response").text
-            correct_answer_element = item.select_one(".wpProQuiz_correct p")
-            answer = ""
-            if correct_answer_element:
-                correct_answer_text = correct_answer_element.text.strip()
+        correct_answers = self.extract_correct_answers()
+        correct_answer_map = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f"}
 
-                regex = self.build_answer_pattern()
-                match = re.search(regex, correct_answer_text)
+        if correct_answers:
+            for idx, no in enumerate(correct_answers):
+                correct_answers[idx] = correct_answer_map[no]
+        else:
+            correct_answers = ["f", "f", "f", "f", "f", "f"]
 
-                if match and match.group(1):
-                    answer_group = match.group(2)
-                    if answer_group:
-                        answer = answer_group.lower()
-
+        for index, item in enumerate(quiz_list_items):
+            question = self.normalize_whitespace(
+                item.select_one('.wpProQuiz_question_text').text)
+            options = [self.normalize_whitespace(itm.text) for itm in item.select(
+                '.wpProQuiz_questionListItem')]
+            explanation = self.normalize_whitespace(
+                item.select_one('.wpProQuiz_correct').text)
+            answer = correct_answers[index]
             ret = {
                 "question": question,
                 "answer": answer,
-                "explaination": explaination,
+                "explanation": explanation,
             }
 
             for idx, option in enumerate(options):
