@@ -1,0 +1,1386 @@
+[
+    {
+        "question_no": "12",
+        "question": "I prefer to ride than to walk. riding to walking ride to walk riding than walking",
+        "a": "I prefer to ride than to walk.",
+        "b": "riding to walking",
+        "c": "ride to walk",
+        "d": "riding than walking"
+    },
+    {
+        "question_no": "16",
+        "question": "He backed out of the agreement. gave his full support reconsidered the point withdrew his support from",
+        "a": "He backed out of the agreement.",
+        "b": "gave his full support",
+        "c": "reconsidered the point",
+        "d": "withdrew his support from"
+    },
+    {
+        "question_no": "37",
+        "question": "We eat that we may live. might shall should",
+        "a": "We eat that we may live.",
+        "b": "might",
+        "c": "shall",
+        "d": "should"
+    },
+    {
+        "question_no": "49",
+        "question": "He doesn’t smoke, nor I did. nor I smoke nor I do nor do I",
+        "a": "He doesn’t smoke, nor I did.",
+        "b": "nor I smoke",
+        "c": "nor I do",
+        "d": "nor do I"
+    },
+    {
+        "question_no": "53",
+        "question": "He is addicted to smoke. addicted to smoking used to smoke addicted of smoking",
+        "a": "He is addicted to smoke.",
+        "b": "addicted to smoking",
+        "c": "used to smoke",
+        "d": "addicted of smoking"
+    },
+    {
+        "question_no": "61",
+        "question": "It’s high time that you go home. have gone should go went",
+        "a": "It’s high time that you go home.",
+        "b": "have gone",
+        "c": "should go",
+        "d": "went"
+    },
+    {
+        "question_no": "65",
+        "question": "Neither I nor my friend live here. neither I do nor does my friend neither do I nor does my friend neither I live nor does my friend",
+        "a": "Neither I nor my friend live here.",
+        "b": "neither I do nor does my friend",
+        "c": "neither do I nor does my friend",
+        "d": "neither I live nor does my friend"
+    },
+    {
+        "question_no": "70",
+        "question": "She doesn’t mind to be disturbed. being disturbed to being disturbed being disturbing",
+        "a": "She doesn’t mind to be disturbed.",
+        "b": "being disturbed",
+        "c": "to being disturbed",
+        "d": "being disturbing"
+    },
+    {
+        "question_no": "80",
+        "question": "Will you type these letters now ? Could Can Shall",
+        "a": "Will you type these letters now ?",
+        "b": "Could",
+        "c": "Can",
+        "d": "Shall"
+    },
+    {
+        "question_no": "84",
+        "question": "He is fond of saving money. hoarding not spending spending carefully",
+        "a": "He is fond of saving money.",
+        "b": "hoarding",
+        "c": "not spending",
+        "d": "spending carefully"
+    },
+    {
+        "question_no": "85",
+        "question": "He comes often to our house. come often often comes often come",
+        "a": "He comes often to our house.",
+        "b": "come often",
+        "c": "often comes",
+        "d": "often come"
+    },
+    {
+        "question_no": "90",
+        "question": "It is a three-years degree course. an three-years degree course a three-year degree course a three years degree course",
+        "a": "It is a three-years degree course.",
+        "b": "an three-years degree course",
+        "c": "a three-year degree course",
+        "d": "a three years degree course"
+    },
+    {
+        "question_no": "107",
+        "question": "He comes here often, don’t he? is he? does he? doesn’t he?",
+        "a": "He comes here often, don’t he?",
+        "b": "is he?",
+        "c": "does he?",
+        "d": "doesn’t he?"
+    },
+    {
+        "question_no": "111",
+        "question": "She teaches us grammar, isn’t it ? isn’t she ? doesn’t she ? doesn’t it ?",
+        "a": "She teaches us grammar, isn’t it ?",
+        "b": "isn’t she ?",
+        "c": "doesn’t she ?",
+        "d": "doesn’t it ?"
+    },
+    {
+        "question_no": "115",
+        "question": "The food tastes deliciously. delicacy delicious badly",
+        "a": "The food tastes deliciously.",
+        "b": "delicacy",
+        "c": "delicious",
+        "d": "badly"
+    },
+    {
+        "question_no": "118",
+        "question": "The child died from jaundice. with of by",
+        "a": "The child died from jaundice.",
+        "b": "with",
+        "c": "of",
+        "d": "by"
+    },
+    {
+        "question_no": "129",
+        "question": "He can’t read this, nor can I. no, I never can no, I can’t no, I don’t",
+        "a": "He can’t read this, nor can I.",
+        "b": "no, I never can",
+        "c": "no, I can’t",
+        "d": "no, I don’t"
+    },
+    {
+        "question_no": "130",
+        "question": "I bought four dozen mangoes. dozens of mango dozens of mangoes dozens mangoes",
+        "a": "I bought four dozen mangoes.",
+        "b": "dozens of mango",
+        "c": "dozens of mangoes",
+        "d": "dozens mangoes"
+    },
+    {
+        "question_no": "142",
+        "question": "It is time we leave. left have to leave would leave",
+        "a": "It is time we leave.",
+        "b": "left",
+        "c": "have to leave",
+        "d": "would leave"
+    },
+    {
+        "question_no": "146",
+        "question": "How long are you working here ? have you been working here ? you are working here ? were you working ?",
+        "a": "How long are you working here ?",
+        "b": "have you been working here ?",
+        "c": "you are working here ?",
+        "d": "were you working ?"
+    },
+    {
+        "question_no": "149",
+        "question": "He denied to be party to the deal. refused disagreed rejected",
+        "a": "He denied to be party to the deal.",
+        "b": "refused",
+        "c": "disagreed",
+        "d": "rejected"
+    },
+    {
+        "question_no": "169",
+        "question": "She left the room feeling contrite. sorry for what she had done rather ill extremely irritated",
+        "a": "She left the room feeling contrite.",
+        "b": "sorry for what she had done",
+        "c": "rather ill",
+        "d": "extremely irritated"
+    },
+    {
+        "question_no": "173",
+        "question": "The brown shirt wants washing. has to wash is in need of a wash requires a wash",
+        "a": "The brown shirt wants washing.",
+        "b": "has to wash",
+        "c": "is in need of a wash",
+        "d": "requires a wash"
+    },
+    {
+        "question_no": "186",
+        "question": "He behaves like coward. cowardly in a cowardly manner as if he was a coward",
+        "a": "He behaves like coward.",
+        "b": "cowardly",
+        "c": "in a cowardly manner",
+        "d": "as if he was a coward"
+    },
+    {
+        "question_no": "188",
+        "question": "I used to have very thick hair. use to have used to having used to had",
+        "a": "I used to have very thick hair.",
+        "b": "use to have",
+        "c": "used to having",
+        "d": "used to had"
+    },
+    {
+        "question_no": "199",
+        "question": "My father lives on Delhi. in Delhi at Delhi inside Delhi",
+        "a": "My father lives on Delhi.",
+        "b": "in Delhi",
+        "c": "at Delhi",
+        "d": "inside Delhi"
+    },
+    {
+        "question_no": "200",
+        "question": "He will come instantaneously. just now presently instantly",
+        "a": "He will come instantaneously.",
+        "b": "just now",
+        "c": "presently",
+        "d": "instantly"
+    },
+    {
+        "question_no": "206",
+        "question": "What do you for go to school ? For what do you go to school? What do you go for to school? What do you go to school for?",
+        "a": "What do you for go to school ?",
+        "b": "For what do you go to school?",
+        "c": "What do you go for to school?",
+        "d": "What do you go to school for?"
+    },
+    {
+        "question_no": "211",
+        "question": "He has for good left India. He has left for good India. He has left India for good. Good he has left India.",
+        "a": "He has for good left India.",
+        "b": "He has left for good India.",
+        "c": "He has left India for good.",
+        "d": "Good he has left India."
+    },
+    {
+        "question_no": "224",
+        "question": "He work hard will succeed. who will work hard who will be working hard who works hard",
+        "a": "He work hard will succeed.",
+        "b": "who will work hard",
+        "c": "who will be working hard",
+        "d": "who works hard"
+    },
+    {
+        "question_no": "229",
+        "question": "Rahul gave me an old scissor. an old scissors a pair of old scissors a pair of old scissor",
+        "a": "Rahul gave me an old scissor.",
+        "b": "an old scissors",
+        "c": "a pair of old scissors",
+        "d": "a pair of old scissor"
+    },
+    {
+        "question_no": "238",
+        "question": "He throwed it out of the window. threw throw thrown",
+        "a": "He throwed it out of the window.",
+        "b": "threw",
+        "c": "throw",
+        "d": "thrown"
+    },
+    {
+        "question_no": "239",
+        "question": "Marconi assembled the radio. discovered made invented",
+        "a": "Marconi assembled the radio.",
+        "b": "discovered",
+        "c": "made",
+        "d": "invented"
+    },
+    {
+        "question_no": "254",
+        "question": "It is important not to worry. to don’t worry to not worry don’t worry",
+        "a": "It is important not to worry.",
+        "b": "to don’t worry",
+        "c": "to not worry",
+        "d": "don’t worry"
+    },
+    {
+        "question_no": "261",
+        "question": "Did there bus come on time ? their's theirs their",
+        "a": "Did there bus come on time ?",
+        "b": "their's",
+        "c": "theirs",
+        "d": "their"
+    },
+    {
+        "question_no": "280",
+        "question": "I prefer to ride than to walk. ride to walk riding than walking riding to walking",
+        "a": "I prefer to ride than to walk.",
+        "b": "ride to walk",
+        "c": "riding than walking",
+        "d": "riding to walking"
+    },
+    {
+        "question_no": "293",
+        "question": "This is so important a matter. such an important very important quite important",
+        "a": "This is so important a matter.",
+        "b": "such an important",
+        "c": "very important",
+        "d": "quite important"
+    },
+    {
+        "question_no": "296",
+        "question": "Rakesh didn’t knew my address. didn’t known didn’t have didn’t know",
+        "a": "Rakesh didn’t knew my address.",
+        "b": "didn’t known",
+        "c": "didn’t have",
+        "d": "didn’t know"
+    },
+    {
+        "question_no": "1989",
+        "question": " eversince since in",
+        "a": "",
+        "b": "eversince",
+        "c": "since",
+        "d": "in"
+    },
+    {
+        "question_no": "311",
+        "question": "My foot is paining. aching ailing. hurting",
+        "a": "My foot is paining.",
+        "b": "aching",
+        "c": "ailing.",
+        "d": "hurting"
+    },
+    {
+        "question_no": "312",
+        "question": "The light went out while I read, was reading am reading had read",
+        "a": "The light went out while I read,",
+        "b": "was reading",
+        "c": "am reading",
+        "d": "had read"
+    },
+    {
+        "question_no": "317",
+        "question": "Them shoes are mine. Those That Their",
+        "a": "Them shoes are mine.",
+        "b": "Those",
+        "c": "That",
+        "d": "Their"
+    },
+    {
+        "question_no": "332",
+        "question": "I prefer tea more than coffee. than to better than",
+        "a": "I prefer tea more than coffee.",
+        "b": "than",
+        "c": "to",
+        "d": "better than"
+    },
+    {
+        "question_no": "334",
+        "question": "We have to respect our elders. should may can",
+        "a": "We have to respect our elders.",
+        "b": "should",
+        "c": "may",
+        "d": "can"
+    },
+    {
+        "question_no": "335",
+        "question": "I am working here from 2008. have been working here since have worked here from have been working here from",
+        "a": "I am working here from 2008.",
+        "b": "have been working here since",
+        "c": "have worked here from",
+        "d": "have been working here from"
+    },
+    {
+        "question_no": "336",
+        "question": "Myself Rajesh Mehta. Myselves Myself is I am",
+        "a": "Myself Rajesh Mehta.",
+        "b": "Myselves",
+        "c": "Myself is",
+        "d": "I am"
+    },
+    {
+        "question_no": "338",
+        "question": "Have you taken your breakfast? had eaten done",
+        "a": "Have you taken your breakfast?",
+        "b": "had",
+        "c": "eaten",
+        "d": "done"
+    },
+    {
+        "question_no": "340",
+        "question": "I am having two sisters. have had have had",
+        "a": "I am having two sisters.",
+        "b": "have had",
+        "c": "have",
+        "d": "had"
+    },
+    {
+        "question_no": "341",
+        "question": "They will arrive today night. at night tonight at night today",
+        "a": "They will arrive today night.",
+        "b": "at night",
+        "c": "tonight",
+        "d": "at night today"
+    },
+    {
+        "question_no": "344",
+        "question": "My friend went abroad last week. has gone went to had gone",
+        "a": "My friend went abroad last week.",
+        "b": "has gone",
+        "c": "went to",
+        "d": "had gone"
+    },
+    {
+        "question_no": "349",
+        "question": "I prefer tea rather than coffee. and over to",
+        "a": "I prefer tea rather than coffee.",
+        "b": "and",
+        "c": "over",
+        "d": "to"
+    },
+    {
+        "question_no": "354",
+        "question": "She is loving chocolate ice cream has loving has been loved loves",
+        "a": "She is loving chocolate ice cream",
+        "b": "has loving",
+        "c": "has been loved",
+        "d": "loves"
+    },
+    {
+        "question_no": "358",
+        "question": "Would you like some water ? Can Do Shall",
+        "a": "Would you like some water ?",
+        "b": "Can",
+        "c": "Do",
+        "d": "Shall"
+    },
+    {
+        "question_no": "361",
+        "question": "I am working here from 2008. have been working here since have worked here from have been working here from",
+        "a": "I am working here from 2008.",
+        "b": "have been working here since",
+        "c": "have worked here from",
+        "d": "have been working here from"
+    },
+    {
+        "question_no": "362",
+        "question": "Myself Rajesh Mehta. Myselves Myself is I am",
+        "a": "Myself Rajesh Mehta.",
+        "b": "Myselves",
+        "c": "Myself is",
+        "d": "I am"
+    },
+    {
+        "question_no": "364",
+        "question": "Have you taken your breakfast? had eaten done",
+        "a": "Have you taken your breakfast?",
+        "b": "had",
+        "c": "eaten",
+        "d": "done"
+    },
+    {
+        "question_no": "366",
+        "question": "I am having two sisters. have had have had",
+        "a": "I am having two sisters.",
+        "b": "have had",
+        "c": "have",
+        "d": "had"
+    },
+    {
+        "question_no": "367",
+        "question": "They will arrive today night. at night tonight at night today",
+        "a": "They will arrive today night.",
+        "b": "at night",
+        "c": "tonight",
+        "d": "at night today"
+    },
+    {
+        "question_no": "370",
+        "question": "My friend went abroad last week. has gone went to had gone",
+        "a": "My friend went abroad last week.",
+        "b": "has gone",
+        "c": "went to",
+        "d": "had gone"
+    },
+    {
+        "question_no": "377",
+        "question": "I watched him fell. him fall him to fell him to falling",
+        "a": "I watched him fell.",
+        "b": "him fall",
+        "c": "him to fell",
+        "d": "him to falling"
+    },
+    {
+        "question_no": "381",
+        "question": "1 do not think it would not rain. will rain should not rain should rain",
+        "a": "1 do not think it would not rain.",
+        "b": "will rain",
+        "c": "should not rain",
+        "d": "should rain"
+    },
+    {
+        "question_no": "382",
+        "question": "I prefer tea rather than coffee. and over to",
+        "a": "I prefer tea rather than coffee.",
+        "b": "and",
+        "c": "over",
+        "d": "to"
+    },
+    {
+        "question_no": "387",
+        "question": "She is loving chocolate ice cream has loving has been loved loves",
+        "a": "She is loving chocolate ice cream",
+        "b": "has loving",
+        "c": "has been loved",
+        "d": "loves"
+    },
+    {
+        "question_no": "390",
+        "question": "The little boy kick the ball. have been kicked by the ball has been kicked the ball was kicked the ball",
+        "a": "The little boy kick the ball.",
+        "b": "have been kicked by the ball",
+        "c": "has been kicked the ball",
+        "d": "was kicked the ball"
+    },
+    {
+        "question_no": "394",
+        "question": "One of my friend is an engineer. One of my friends One among my friends One of friend of mine",
+        "a": "One of my friend is an engineer.",
+        "b": "One of my friends",
+        "c": "One among my friends",
+        "d": "One of friend of mine"
+    },
+    {
+        "question_no": "403",
+        "question": "Would you like some water ? Can Do Shall",
+        "a": "Would you like some water ?",
+        "b": "Can",
+        "c": "Do",
+        "d": "Shall"
+    },
+    {
+        "question_no": "418",
+        "question": "He makes excellent portraits. paints portrays illustrates",
+        "a": "He makes excellent portraits.",
+        "b": "paints",
+        "c": "portrays",
+        "d": "illustrates"
+    },
+    {
+        "question_no": "419",
+        "question": "The dog bite him. beat him bit him bitten him",
+        "a": "The dog bite him.",
+        "b": "beat him",
+        "c": "bit him",
+        "d": "bitten him"
+    },
+    {
+        "question_no": "1603",
+        "question": " later latest latter",
+        "a": "",
+        "b": "later",
+        "c": "latest",
+        "d": "latter"
+    },
+    {
+        "question_no": "440",
+        "question": "Diamonds are eternal. enduring forever imperishable",
+        "a": "Diamonds are eternal.",
+        "b": "enduring",
+        "c": "forever",
+        "d": "imperishable"
+    },
+    {
+        "question_no": "448",
+        "question": "She prefers tea than coffee. tea to tea over tea more than",
+        "a": "She prefers tea than coffee.",
+        "b": "tea to",
+        "c": "tea over",
+        "d": "tea more than"
+    },
+    {
+        "question_no": "486",
+        "question": "If he had time he will call you. would have would have had has",
+        "a": "If he had time he will call you.",
+        "b": "would have",
+        "c": "would have had",
+        "d": "has"
+    },
+    {
+        "question_no": "495",
+        "question": "She cries all the time. mostly everytime day in and day out pretty frequently",
+        "a": "She cries all the time.",
+        "b": "mostly everytime",
+        "c": "day in and day out",
+        "d": "pretty frequently"
+    },
+    {
+        "question_no": "500",
+        "question": "He was hung for murder. hang hanged hanging",
+        "a": "He was hung for murder.",
+        "b": "hang",
+        "c": "hanged",
+        "d": "hanging"
+    },
+    {
+        "question_no": "502",
+        "question": "Neither Ted nor Johan are going. have been going were going is going",
+        "a": "Neither Ted nor Johan are going.",
+        "b": "have been going",
+        "c": "were going",
+        "d": "is going"
+    },
+    {
+        "question_no": "515",
+        "question": "He evaded to pay income tax. from paying against paying paying",
+        "a": "He evaded to pay income tax.",
+        "b": "from paying",
+        "c": "against paying",
+        "d": "paying"
+    },
+    {
+        "question_no": "528",
+        "question": "Don’t sit in the grass. It’s wet. beside by the side of on",
+        "a": "Don’t sit in the grass. It’s wet.",
+        "b": "beside",
+        "c": "by the side of",
+        "d": "on"
+    },
+    {
+        "question_no": "546",
+        "question": "I like tea and I like coffee. tea to coffee tea after coffee both tea and coffee",
+        "a": "I like tea and I like coffee.",
+        "b": "tea to coffee",
+        "c": "tea after coffee",
+        "d": "both tea and coffee"
+    },
+    {
+        "question_no": "551",
+        "question": "He was too glad to see his friend. very glad so glad to glad",
+        "a": "He was too glad to see his friend.",
+        "b": "very glad",
+        "c": "so glad",
+        "d": "to glad"
+    },
+    {
+        "question_no": "574",
+        "question": "I feel out of sort today. I feel of sort today. I feel out of sorts today. I feel out of sort this day.",
+        "a": "I feel out of sort today.",
+        "b": "I feel of sort today.",
+        "c": "I feel out of sorts today.",
+        "d": "I feel out of sort this day."
+    },
+    {
+        "question_no": "586",
+        "question": "The office is soon to be closed. just to about to where to",
+        "a": "The office is soon to be closed.",
+        "b": "just to",
+        "c": "about to",
+        "d": "where to"
+    },
+    {
+        "question_no": "601",
+        "question": "We did not see this movie yet. never seen have not seen never have seen",
+        "a": "We did not see this movie yet.",
+        "b": "never seen",
+        "c": "have not seen",
+        "d": "never have seen"
+    },
+    {
+        "question_no": "610",
+        "question": "We were not used to get up early. used to getting up getting up used to be up",
+        "a": "We were not used to get up early.",
+        "b": "used to getting up",
+        "c": "getting up",
+        "d": "used to be up"
+    },
+    {
+        "question_no": "613",
+        "question": "Your dress is the same like mine. the same as as same as similar like",
+        "a": "Your dress is the same like mine.",
+        "b": "the same as",
+        "c": "as same as",
+        "d": "similar like"
+    },
+    {
+        "question_no": "617",
+        "question": "I met him in the way. on the way at the way during the way",
+        "a": "I met him in the way.",
+        "b": "on the way",
+        "c": "at the way",
+        "d": "during the way"
+    },
+    {
+        "question_no": "630",
+        "question": "You are a mechanic, aren’t you? wasn’t isn’t are",
+        "a": "You are a mechanic, aren’t you?",
+        "b": "wasn’t",
+        "c": "isn’t",
+        "d": "are"
+    },
+    {
+        "question_no": "646",
+        "question": "Henry is taking John for tea. taking John on tea taking John to tea taking John at tea",
+        "a": "Henry is taking John for tea.",
+        "b": "taking John on tea",
+        "c": "taking John to tea",
+        "d": "taking John at tea"
+    },
+    {
+        "question_no": "648",
+        "question": "Any of these two books is good. Any of this Either of these Any other of this     .",
+        "a": "Any of these two books is good.",
+        "b": "Any of this",
+        "c": "Either of these",
+        "d": "Any other of this     ."
+    },
+    {
+        "question_no": "650",
+        "question": "He was for a time our captain. for sometime once at any time",
+        "a": "He was for a time our captain.",
+        "b": "for sometime",
+        "c": "once",
+        "d": "at any time"
+    },
+    {
+        "question_no": "652",
+        "question": "He belongs to a rich family. a well-to-do family an upper class family a well-known family",
+        "a": "He belongs to a rich family.",
+        "b": "a well-to-do family",
+        "c": "an upper class family",
+        "d": "a well-known family"
+    },
+    {
+        "question_no": "664",
+        "question": "Hitler was an absolute potentate. dictator militant ruler",
+        "a": "Hitler was an absolute potentate.",
+        "b": "dictator",
+        "c": "militant",
+        "d": "ruler"
+    },
+    {
+        "question_no": "675",
+        "question": "Old habits die hardly. hard too hard much hardly",
+        "a": "Old habits die hardly.",
+        "b": "hard",
+        "c": "too hard",
+        "d": "much hardly"
+    },
+    {
+        "question_no": "684",
+        "question": "She does not tell lies, doesn’t she? isn’t she ? does she ? didn’t she ?",
+        "a": "She does not tell lies, doesn’t she?",
+        "b": "isn’t she ?",
+        "c": "does she ?",
+        "d": "didn’t she ?"
+    },
+    {
+        "question_no": "685",
+        "question": "Have you ever been in New York ? at to with",
+        "a": "Have you ever been in New York ?",
+        "b": "at",
+        "c": "to",
+        "d": "with"
+    },
+    {
+        "question_no": "690",
+        "question": "He absented from the meeting. was absent absented himself took absence",
+        "a": "He absented from the meeting.",
+        "b": "was absent",
+        "c": "absented himself",
+        "d": "took absence"
+    },
+    {
+        "question_no": "694",
+        "question": "A thing of beauty is joy for ever. is the joy is joyous is a joy",
+        "a": "A thing of beauty is joy for ever.",
+        "b": "is the joy",
+        "c": "is joyous",
+        "d": "is a joy"
+    },
+    {
+        "question_no": "695",
+        "question": "The little boy fell from the roof. fell below the roof fell down the roof fell off the roof",
+        "a": "The little boy fell from the roof.",
+        "b": "fell below the roof",
+        "c": "fell down the roof",
+        "d": "fell off the roof"
+    },
+    {
+        "question_no": "701",
+        "question": "The train rolls along the track. rumbles rattles ripples",
+        "a": "The train rolls along the track.",
+        "b": "rumbles",
+        "c": "rattles",
+        "d": "ripples"
+    },
+    {
+        "question_no": "716",
+        "question": "The prisoner was kept in Jail. kept in confined kept in confinement. No Improvement",
+        "a": "The prisoner was kept in Jail.",
+        "b": "kept in confined",
+        "c": "kept in confinement.",
+        "d": "No Improvement"
+    },
+    {
+        "question_no": "15",
+        "question": " delayed pushed adjourned",
+        "a": "",
+        "b": "delayed",
+        "c": "pushed",
+        "d": "adjourned"
+    },
+    {
+        "question_no": "760",
+        "question": "The office is soon to be closed. just to about to immediately to",
+        "a": "The office is soon to be closed.",
+        "b": "just to",
+        "c": "about to",
+        "d": "immediately to"
+    },
+    {
+        "question_no": "774",
+        "question": "The train was late for fifty minutes. behind by around",
+        "a": "The train was late for fifty minutes.",
+        "b": "behind",
+        "c": "by",
+        "d": "around"
+    },
+    {
+        "question_no": "775",
+        "question": "The train is running late time. after behind off",
+        "a": "The train is running late time.",
+        "b": "after",
+        "c": "behind",
+        "d": "off"
+    },
+    {
+        "question_no": "777",
+        "question": "I made a lecture. will make gave would make",
+        "a": "I made a lecture.",
+        "b": "will make",
+        "c": "gave",
+        "d": "would make"
+    },
+    {
+        "question_no": "778",
+        "question": "They prevented me from danger. was preventing were preventing protected",
+        "a": "They prevented me from danger.",
+        "b": "was preventing",
+        "c": "were preventing",
+        "d": "protected"
+    },
+    {
+        "question_no": "779",
+        "question": "The room is smoky. by smokes filled with smoke with smokes",
+        "a": "The room is smoky.",
+        "b": "by smokes",
+        "c": "filled with smoke",
+        "d": "with smokes"
+    },
+    {
+        "question_no": "791",
+        "question": "He did not give me some books. more any much",
+        "a": "He did not give me some books.",
+        "b": "more",
+        "c": "any",
+        "d": "much"
+    },
+    {
+        "question_no": "796",
+        "question": "I shall not go until I am invited. till whether unless",
+        "a": "I shall not go until I am invited.",
+        "b": "till",
+        "c": "whether",
+        "d": "unless"
+    },
+    {
+        "question_no": "800",
+        "question": "She is very eccentric woman. impatient No improvement unusual",
+        "a": "She is very eccentric woman.",
+        "b": "impatient",
+        "c": "No improvement",
+        "d": "unusual"
+    },
+    {
+        "question_no": "805",
+        "question": "He insisted to go with me. insisted upon going agreed to go No improvement",
+        "a": "He insisted to go with me.",
+        "b": "insisted upon going",
+        "c": "agreed to go",
+        "d": "No improvement"
+    },
+    {
+        "question_no": "810",
+        "question": "He lives far from the station. No improvement away from the station a long way from the station",
+        "a": "He lives far from the station.",
+        "b": "No improvement",
+        "c": "away from the station",
+        "d": "a long way from the station"
+    },
+    {
+        "question_no": "812",
+        "question": "They spoke about the weather. No improvement said talked",
+        "a": "They spoke about the weather.",
+        "b": "No improvement",
+        "c": "said",
+        "d": "talked"
+    },
+    {
+        "question_no": "814",
+        "question": "It’s high time that you go home. No improvement are going went",
+        "a": "It’s high time that you go home.",
+        "b": "No improvement",
+        "c": "are going",
+        "d": "went"
+    },
+    {
+        "question_no": "815",
+        "question": "Drinking tea is an English habit. No improvement tradition convention",
+        "a": "Drinking tea is an English habit.",
+        "b": "No improvement",
+        "c": "tradition",
+        "d": "convention"
+    },
+    {
+        "question_no": "818",
+        "question": "This news is too good to be true. cannot be true so good that it should be true No improvement",
+        "a": "This news is too good to be true.",
+        "b": "cannot be true",
+        "c": "so good that it should be true",
+        "d": "No improvement"
+    },
+    {
+        "question_no": "820",
+        "question": "If he has time he will telephone. could might would",
+        "a": "If he has time he will telephone.",
+        "b": "could",
+        "c": "might",
+        "d": "would"
+    },
+    {
+        "question_no": "822",
+        "question": "I did not see you for a long time. have not seen saw No improvement",
+        "a": "I did not see you for a long time.",
+        "b": "have not seen",
+        "c": "saw",
+        "d": "No improvement"
+    },
+    {
+        "question_no": "824",
+        "question": "He is somehow tall for his age. No improvement rather many",
+        "a": "He is somehow tall for his age.",
+        "b": "No improvement",
+        "c": "rather",
+        "d": "many"
+    },
+    {
+        "question_no": "829",
+        "question": "She could not help but laugh. but laughing laughter No Improvement",
+        "a": "She could not help but laugh.",
+        "b": "but laughing",
+        "c": "laughter",
+        "d": "No Improvement"
+    },
+    {
+        "question_no": "830",
+        "question": "We met yesterday, haven’t we ? didn’t we ? No Improvement hadn’t we ?",
+        "a": "We met yesterday, haven’t we ?",
+        "b": "didn’t we ?",
+        "c": "No Improvement",
+        "d": "hadn’t we ?"
+    },
+    {
+        "question_no": "841",
+        "question": "He bowed down at the altar. next to the altar No Improvement before the altar",
+        "a": "He bowed down at the altar.",
+        "b": "next to the altar",
+        "c": "No Improvement",
+        "d": "before the altar"
+    },
+    {
+        "question_no": "850",
+        "question": "The equipment were faulty. equipment were equipments are equipment was",
+        "a": "The equipment were faulty.",
+        "b": "equipment were",
+        "c": "equipments are",
+        "d": "equipment was"
+    },
+    {
+        "question_no": "852",
+        "question": "The gold is a precious metal. No improvement A gold An old",
+        "a": "The gold is a precious metal.",
+        "b": "No improvement",
+        "c": "A gold",
+        "d": "An old"
+    },
+    {
+        "question_no": "853",
+        "question": "Old habits die hardly. No improvement die much hardly die hard",
+        "a": "Old habits die hardly.",
+        "b": "No improvement",
+        "c": "die much hardly",
+        "d": "die hard"
+    },
+    {
+        "question_no": "854",
+        "question": "He is known by others. for among to",
+        "a": "He is known by others.",
+        "b": "for",
+        "c": "among",
+        "d": "to"
+    },
+    {
+        "question_no": "857",
+        "question": "The criminal must be killed. hanged murdered hung",
+        "a": "The criminal must be killed.",
+        "b": "hanged",
+        "c": "murdered",
+        "d": "hung"
+    },
+    {
+        "question_no": "869",
+        "question": "He parts his hair in the centre. at the centre near the centre in the middle",
+        "a": "He parts his hair in the centre.",
+        "b": "at the centre",
+        "c": "near the centre",
+        "d": "in the middle"
+    },
+    {
+        "question_no": "871",
+        "question": "Shut the window; it is fairly cold. quiet quite rather",
+        "a": "Shut the window; it is fairly cold.",
+        "b": "quiet",
+        "c": "quite",
+        "d": "rather"
+    },
+    {
+        "question_no": "873",
+        "question": "He avoids to speak to me. to talk speaking speech",
+        "a": "He avoids to speak to me.",
+        "b": "to talk",
+        "c": "speaking",
+        "d": "speech"
+    },
+    {
+        "question_no": "875",
+        "question": "I have just taken my meals. I have just had my food I am done with my meals I finished my meals",
+        "a": "I have just taken my meals.",
+        "b": "I have just had my food",
+        "c": "I am done with my meals",
+        "d": "I finished my meals"
+    },
+    {
+        "question_no": "881",
+        "question": "Where are you coming from ? No improvement do you come from were you from",
+        "a": "Where are you coming from ?",
+        "b": "No improvement",
+        "c": "do you come from",
+        "d": "were you from"
+    },
+    {
+        "question_no": "884",
+        "question": "One should keep their word. one’s his everyone’s",
+        "a": "One should keep their word.",
+        "b": "one’s",
+        "c": "his",
+        "d": "everyone’s"
+    },
+    {
+        "question_no": "888",
+        "question": "This matter admits no excuse. admits for No improvement admits of",
+        "a": "This matter admits no excuse.",
+        "b": "admits for",
+        "c": "No improvement",
+        "d": "admits of"
+    },
+    {
+        "question_no": "896",
+        "question": "Sincerity is always appreciated. enhanced enjoyed waited",
+        "a": "Sincerity is always appreciated.",
+        "b": "enhanced",
+        "c": "enjoyed",
+        "d": "waited"
+    },
+    {
+        "question_no": "897",
+        "question": "Listen attention to what I say. attentively attend attentive",
+        "a": "Listen attention to what I say.",
+        "b": "attentively",
+        "c": "attend",
+        "d": "attentive"
+    },
+    {
+        "question_no": "901",
+        "question": "The criminal was hung to death. hunged hang No improvement",
+        "a": "The criminal was hung to death.",
+        "b": "hunged",
+        "c": "hang",
+        "d": "No improvement"
+    },
+    {
+        "question_no": "908",
+        "question": "He said, ‘Let the show begins’ ‘Let the show to begin’ ‘Let’s the show begin’ ‘Let the show begin’",
+        "a": "He said, ‘Let the show begins’",
+        "b": "‘Let the show to begin’",
+        "c": "‘Let’s the show begin’",
+        "d": "‘Let the show begin’"
+    },
+    {
+        "question_no": "914",
+        "question": "The Sutlej has changed its path. journey course line",
+        "a": "The Sutlej has changed its path.",
+        "b": "journey",
+        "c": "course",
+        "d": "line"
+    },
+    {
+        "question_no": "915",
+        "question": "She is willing to help you. wilful willingly wilfully",
+        "a": "She is willing to help you.",
+        "b": "wilful",
+        "c": "willingly",
+        "d": "wilfully"
+    },
+    {
+        "question_no": "921",
+        "question": "Ours is a joined family. joint jointed No Improvement",
+        "a": "Ours is a joined family.",
+        "b": "joint",
+        "c": "jointed",
+        "d": "No Improvement"
+    },
+    {
+        "question_no": "929",
+        "question": "We’ve got a new big house. big new house house big new No improvement",
+        "a": "We’ve got a new big house.",
+        "b": "big new house",
+        "c": "house big new",
+        "d": "No improvement"
+    },
+    {
+        "question_no": "940",
+        "question": "The boat was drowned. was sunk was drown was sink",
+        "a": "The boat was drowned.",
+        "b": "was sunk",
+        "c": "was drown",
+        "d": "was sink"
+    },
+    {
+        "question_no": "950",
+        "question": "The boat was drowned. was sunk was drown was sink",
+        "a": "The boat was drowned.",
+        "b": "was sunk",
+        "c": "was drown",
+        "d": "was sink"
+    },
+    {
+        "question_no": "951",
+        "question": "I contradicted against him. contradicted over No improvement contradicted",
+        "a": "I contradicted against him.",
+        "b": "contradicted over",
+        "c": "No improvement",
+        "d": "contradicted"
+    },
+    {
+        "question_no": "960",
+        "question": "You cannot forbid him leaving. his leaving he leaving him to leave",
+        "a": "You cannot forbid him leaving.",
+        "b": "his leaving",
+        "c": "he leaving",
+        "d": "him to leave"
+    },
+    {
+        "question_no": "962",
+        "question": "She told me she has a headache. had is having will have",
+        "a": "She told me she has a headache.",
+        "b": "had",
+        "c": "is having",
+        "d": "will have"
+    },
+    {
+        "question_no": "964",
+        "question": "We waited in six hours. within for during",
+        "a": "We waited in six hours.",
+        "b": "within",
+        "c": "for",
+        "d": "during"
+    },
+    {
+        "question_no": "965",
+        "question": "It’s time they went home. go had gone gone",
+        "a": "It’s time they went home.",
+        "b": "go",
+        "c": "had gone",
+        "d": "gone"
+    },
+    {
+        "question_no": "1000",
+        "question": "She has no pen to write. write with write at write in",
+        "a": "She has no pen to write.",
+        "b": "write with",
+        "c": "write at",
+        "d": "write in"
+    },
+    {
+        "question_no": "1001",
+        "question": "He dislikes the word, isn’t he ? doesn’t he ? didn’t he ? does he ?",
+        "a": "He dislikes the word, isn’t he ?",
+        "b": "doesn’t he ?",
+        "c": "didn’t he ?",
+        "d": "does he ?"
+    },
+    {
+        "question_no": "1008",
+        "question": "The farmers work at the fields. on the fields through the fields in the fields",
+        "a": "The farmers work at the fields.",
+        "b": "on the fields",
+        "c": "through the fields",
+        "d": "in the fields"
+    },
+    {
+        "question_no": "1012",
+        "question": "It is a place far of here. far by here far from here far away here",
+        "a": "It is a place far of here.",
+        "b": "far by here",
+        "c": "far from here",
+        "d": "far away here"
+    },
+    {
+        "question_no": "1031",
+        "question": "I have to say them the truth. tell state speak",
+        "a": "I have to say them the truth.",
+        "b": "tell",
+        "c": "state",
+        "d": "speak"
+    },
+    {
+        "question_no": "1050",
+        "question": "Do you have some sugar? any sugar little sugar small sugar",
+        "a": "Do you have some sugar?",
+        "b": "any sugar",
+        "c": "little sugar",
+        "d": "small sugar"
+    },
+    {
+        "question_no": "1056",
+        "question": "He is in of sorts today. out on outside",
+        "a": "He is in of sorts today.",
+        "b": "out",
+        "c": "on",
+        "d": "outside"
+    },
+    {
+        "question_no": "1057",
+        "question": "She told to me the news. said me said to me told me",
+        "a": "She told to me the news.",
+        "b": "said me",
+        "c": "said to me",
+        "d": "told me"
+    },
+    {
+        "question_no": "3000",
+        "question": " dozen costs dozens cost dozens costs",
+        "a": "",
+        "b": "dozen costs",
+        "c": "dozens cost",
+        "d": "dozens costs"
+    },
+    {
+        "question_no": "1066",
+        "question": "I will not buy some mangoes. a little much any",
+        "a": "I will not buy some mangoes.",
+        "b": "a little",
+        "c": "much",
+        "d": "any"
+    },
+    {
+        "question_no": "1072",
+        "question": "I was impressed of it. by on for",
+        "a": "I was impressed of it.",
+        "b": "by",
+        "c": "on",
+        "d": "for"
+    },
+    {
+        "question_no": "1083",
+        "question": "Mankind does not know this do had is",
+        "a": "Mankind does not know this",
+        "b": "do",
+        "c": "had",
+        "d": "is"
+    },
+    {
+        "question_no": "1096",
+        "question": "Forewarned is forearmed. For warned is forearmed. Before warned is forearmed. Forewarned is for armed.",
+        "a": "Forewarned is forearmed.",
+        "b": "For warned is forearmed.",
+        "c": "Before warned is forearmed.",
+        "d": "Forewarned is for armed."
+    },
+    {
+        "question_no": "1103",
+        "question": "Herself saw the thief. Herself she saw the thief. She herself saw the thief. Herself she see the thief.",
+        "a": "Herself saw the thief.",
+        "b": "Herself she saw the thief.",
+        "c": "She herself saw the thief.",
+        "d": "Herself she see the thief."
+    },
+    {
+        "question_no": "1106",
+        "question": "Old habit die hardly. Old habits die hardly. Old habits die hard. Older habits die too hard.",
+        "a": "Old habit die hardly.",
+        "b": "Old habits die hardly.",
+        "c": "Old habits die hard.",
+        "d": "Older habits die too hard."
+    },
+    {
+        "question_no": "1115",
+        "question": "There was a roll of drums? role droll troll",
+        "a": "There was a roll of drums?",
+        "b": "role",
+        "c": "droll",
+        "d": "troll"
+    },
+    {
+        "question_no": "1172",
+        "question": "She angrily broke up the letter. tore up break in teared up",
+        "a": "She angrily broke up the letter.",
+        "b": "tore up",
+        "c": "break in",
+        "d": "teared up"
+    },
+    {
+        "question_no": "1180",
+        "question": "He jumped on the lake in the into the onto the",
+        "a": "He jumped on the lake",
+        "b": "in the",
+        "c": "into the",
+        "d": "onto the"
+    },
+    {
+        "question_no": "1192",
+        "question": "You are junior than me in age to me in age. of me in age. to me at age.",
+        "a": "You are junior than me in age",
+        "b": "to me in age.",
+        "c": "of me in age.",
+        "d": "to me at age."
+    },
+    {
+        "question_no": "1199",
+        "question": "Africa is in the South of Europe. by the to the over the",
+        "a": "Africa is in the South of Europe.",
+        "b": "by the",
+        "c": "to the",
+        "d": "over the"
+    },
+    {
+        "question_no": "1210",
+        "question": "I and my parents live together. Me and my parents My parents and I My parents and me",
+        "a": "I and my parents live together.",
+        "b": "Me and my parents",
+        "c": "My parents and I",
+        "d": "My parents and me"
+    },
+    {
+        "question_no": "1226",
+        "question": "I bought four dozen of mangoes. dozens of mango dozens of mangoes dozen mangoes",
+        "a": "I bought four dozen of mangoes.",
+        "b": "dozens of mango",
+        "c": "dozens of mangoes",
+        "d": "dozen mangoes"
+    },
+    {
+        "question_no": "1242",
+        "question": "Please switch of the fan. switch off switch in switch out",
+        "a": "Please switch of the fan.",
+        "b": "switch off",
+        "c": "switch in",
+        "d": "switch out"
+    },
+    {
+        "question_no": "1261",
+        "question": "They have had a real good time. have had a have had really have had a really",
+        "a": "They have had a real good time.",
+        "b": "have had a",
+        "c": "have had really",
+        "d": "have had a really"
+    },
+    {
+        "question_no": "1265",
+        "question": "Sunil and I helped to sell tickets. we us me",
+        "a": "Sunil and I helped to sell tickets.",
+        "b": "we",
+        "c": "us",
+        "d": "me"
+    }
+]
