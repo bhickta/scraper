@@ -18,6 +18,8 @@ class VisionMCQExtractor(MCQExtractor):
 
         for mcq in mcq_pattern.finditer(self.text):
             question_no = int(mcq.group(1))
+            if last_question_no in [21]:
+                print(mcq.group(2))
             if question_no != last_question_no + 1 and last_question_no != 0:
                 continue
 
@@ -30,8 +32,9 @@ class VisionMCQExtractor(MCQExtractor):
                 question_text).strip()
             self.questions[question_no] = {
                 "question": question_text,
-                "options": options,
             }
+            for idx, option in enumerate(options):
+                self.questions[question_no][chr(ord('a') + idx)] = option
             last_question_no = question_no
 
     def process_explanation(self):
@@ -74,7 +77,7 @@ class VisionMCQExtractor(MCQExtractor):
         self.mcqs = [
             {
                 "question": question["question"],
-                "options": question["options"],
+                "a": question.get("a", ""),
                 "answer": self.explanations.get(question_no, {}).get('answer'),
                 "explanation": self.explanations.get(question_no, {}).get('explanation')
             }
@@ -93,3 +96,4 @@ if __name__ == "__main__":
     extractor = VisionMCQExtractor(
         pdf_service=pdf_service, output_path="vision_mcqs.json")
     extractor.run(pages=range(1, 59))
+    extractor.to_json()
