@@ -15,27 +15,32 @@ class VisionMCQExtractor(MCQExtractor):
         mcq_pattern = re.compile(
             r"^\s*(\d+)\.\s*\n(.*?)(?=\n\s*\d+\.\s*\n|\Z)", re.DOTALL | re.MULTILINE)
         last_question_no = 0
-        index_of_last_question = 0
         mcqs = mcq_pattern.findall(self.text)
-        for mcq in mcqs:
+
+        for i, mcq in enumerate(mcqs):
             question_no = int(mcq[0])
+
             if question_no != last_question_no + 1 and last_question_no != 0:
                 continue
-            question_text = "\n".join(
-                [mcq[1] for mcq in mcqs[index_of_last_question:mcqs.index(mcq) + 1]])
+
+            question_text = mcq[1]  # Directly assign the current question text
+
             if "Copyright © by Vision IAS" in question_text:
                 question_text = question_text.split(
                     "Copyright © by Vision IAS")[0].strip()
+
             options = self._extract_options(question_text)
             question_text = self._remove_options_from_text(
                 question_text).strip()
+
             self.questions[question_no] = {
                 "question": question_text,
+                "question_no": question_no
             }
             for idx, option in enumerate(options):
                 self.questions[question_no][chr(ord('a') + idx)] = option
+
             last_question_no = question_no
-            index_of_last_question = mcqs.index(mcq)
 
     def process_explanation(self):
         explanation_pattern = re.compile(
@@ -76,6 +81,7 @@ class VisionMCQExtractor(MCQExtractor):
     def get_mcqs(self):
         self.mcqs = [
             {
+                "question_no": question["question_no"],
                 "question": question["question"],
                 "a": question.get("a", ""),
                 "b": question.get("b", ""),
@@ -98,6 +104,6 @@ class VisionMCQExtractor(MCQExtractor):
 if __name__ == "__main__":
     pdf_service = PDFService("./data/VISION IAS PRELIMS-2024 _TEST- 01-32.PDF")
     extractor = VisionMCQExtractor(
-        pdf_service=pdf_service, output_path="vision_mcqs.json")
+        pdf_service=pdf_service, output_path="vision_mcqs.csv")
     extractor.run(pages=range(1, 59))
-    extractor.to_json()
+    extractor.to_csv()
