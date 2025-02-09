@@ -3,9 +3,8 @@ from core.services.pdf_service import PDFService
 
 
 class MCQExtractor:
-    def __init__(self, pdf_service: PDFService, **kwargs):
-        self.pdf_service = pdf_service
-        self.mcqs = []
+    def __init__(self, **kwargs):
+        self.pdf_service = kwargs["pdf_service"]
         self.output_path = kwargs.get("output_path", "mcqs.json")
 
     def process_mcqs(self):
