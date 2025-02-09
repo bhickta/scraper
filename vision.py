@@ -4,28 +4,33 @@ from core import re
 
 
 class VisionMCQExtractor(MCQExtractor):
+
     def process_mcqs(self, text):
         mcq_pattern = re.compile(
             r"^\s*(\d+)\.\s*\n(.*?)(?=\n\s*\d+\.\s*\n|\Z)",
             re.DOTALL | re.MULTILINE
         )
-        questions = mcq_pattern.findall(text)
-        self.process_questions(questions)
+        last_question_no = 0
+        for mcq in mcq_pattern.finditer(text):
+            question_no = int(mcq.group(1))
+            if question_no != last_question_no + 1 and last_question_no != 0:
 
-    def process_questions(self, questions):
-        for question_no, question in questions:
-            print(question)
-            question, options = self.extract_mcq(question)
+                continue
+
+            question_text = mcq.group(2).strip()
+            options_pattern = re.compile(r"^[a-d]\)\s*(.+)$", re.MULTILINE)
+            options = options_pattern.findall(question_text)
+            question_text = options_pattern.sub("", question_text).strip()
             self.mcqs.append({
-                "question_no": question_no,
-                "question": question,
-                "a": options.get("a", ""),
-                "b": options.get("b", ""),
-                "c": options.get("c", ""),
-                "d": options.get("d", ""),
-                "e": options.get("e", ""),
-                "f": options.get("f", ""),
+                "question": question_text,
+                "options": options,
+                "number": question_no
             })
+            last_question_no = question_no
+
+    def run(self, **kwargs):
+        super().run(**kwargs)
+        print(len(self.mcqs))
 
     def extract_mcq(self, text):
         match = re.search(r"^(.*?)(?=\n\s*\(\w\))", text, re.DOTALL)
@@ -41,4 +46,4 @@ if __name__ == "__main__":
     pdf_service = PDFService(
         "./data/VISION IAS PRELIMS-2024 _TEST- 01-32.PDF")
     extractor = VisionMCQExtractor(pdf_service, output_path="vision_mcqs.json")
-    mcqs = extractor.run(pages=range(5, 6))
+    mcqs = extractor.run(pages=range(60, 79))
