@@ -5,13 +5,13 @@ from core import re
 
 class VisionMCQExtractor(MCQExtractor):
 
-    def process_mcqs(self, text):
+    def process_mcqs(self):
         mcq_pattern = re.compile(
             r"^\s*(\d+)\.\s*\n(.*?)(?=\n\s*\d+\.\s*\n|\Z)",
             re.DOTALL | re.MULTILINE
         )
         last_question_no = 0
-        for mcq in mcq_pattern.finditer(text):
+        for mcq in mcq_pattern.finditer(self.text):
             question_no = int(mcq.group(1))
             if question_no != last_question_no + 1 and last_question_no != 0:
 
@@ -28,22 +28,37 @@ class VisionMCQExtractor(MCQExtractor):
             })
             last_question_no = question_no
 
+    def process_explanation(self):
+        explanation_pattern = re.compile(
+            r"^Q\s*(\d+)\.", re.DOTALL | re.MULTILINE
+        )
+        last_question_no = 0
+        content_list = []
+
+        for match in explanation_pattern.finditer(self.text):
+            question_no = int(match.group(1))
+            if question_no != last_question_no + 1 and last_question_no != 0:
+                continue
+
+            start = match.end()
+            next_match = next(explanation_pattern.finditer(
+                self.text[start:]), None)
+            end = start + (next_match.start()
+                           if next_match else len(self.text))
+
+            content = self.text[start:end].strip()
+            content_list.append(content)
+            last_question_no = question_no
+
+        print(len(content_list))
+
     def run(self, **kwargs):
         super().run(**kwargs)
-        print(len(self.mcqs))
-
-    def extract_mcq(self, text):
-        match = re.search(r"^(.*?)(?=\n\s*\(\w\))", text, re.DOTALL)
-        question = match.group(1).strip() if match else None
-
-        options = {key: value.strip()
-                   for key, value in re.findall(r"\((\w)\)\s*([^\(\)]*)", text)}
-
-        return question, options
+        self.process_explanation()
 
 
 if __name__ == "__main__":
     pdf_service = PDFService(
         "./data/VISION IAS PRELIMS-2024 _TEST- 01-32.PDF")
     extractor = VisionMCQExtractor(pdf_service, output_path="vision_mcqs.json")
-    mcqs = extractor.run(pages=range(60, 79))
+    mcqs = extractor.run(pages=range(20, 59))

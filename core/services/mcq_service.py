@@ -8,7 +8,7 @@ class MCQExtractor:
         self.mcqs = []
         self.output_path = kwargs.get("output_path", "mcqs.json")
 
-    def process_mcqs(self, text):
+    def process_mcqs(self):
         pass
 
     def to_json(self):
@@ -17,8 +17,7 @@ class MCQExtractor:
 
     def run(self, pages=None):
         self.text = self.pdf_service.extract_text(pages)
-        for page_num, page_text in self.text.items():
-            self.process_mcqs(page_text)
+        self.process_mcqs()
         self.validate()
         self.to_json()
         return self.mcqs
