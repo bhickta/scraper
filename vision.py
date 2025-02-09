@@ -15,15 +15,14 @@ class VisionMCQExtractor(MCQExtractor):
         mcq_pattern = re.compile(
             r"^\s*(\d+)\.\s*\n(.*?)(?=\n\s*\d+\.\s*\n|\Z)", re.DOTALL | re.MULTILINE)
         last_question_no = 0
-
-        for mcq in mcq_pattern.finditer(self.text):
-            question_no = int(mcq.group(1))
-            if last_question_no in [21]:
-                print(mcq.group(2))
+        index_of_last_question = 0
+        mcqs = mcq_pattern.findall(self.text)
+        for mcq in mcqs:
+            question_no = int(mcq[0])
             if question_no != last_question_no + 1 and last_question_no != 0:
                 continue
-
-            question_text = mcq.group(2).strip()
+            question_text = "\n".join(
+                [mcq[1] for mcq in mcqs[index_of_last_question:mcqs.index(mcq) + 1]])
             if "Copyright © by Vision IAS" in question_text:
                 question_text = question_text.split(
                     "Copyright © by Vision IAS")[0].strip()
@@ -36,6 +35,7 @@ class VisionMCQExtractor(MCQExtractor):
             for idx, option in enumerate(options):
                 self.questions[question_no][chr(ord('a') + idx)] = option
             last_question_no = question_no
+            index_of_last_question = mcqs.index(mcq)
 
     def process_explanation(self):
         explanation_pattern = re.compile(
@@ -78,6 +78,10 @@ class VisionMCQExtractor(MCQExtractor):
             {
                 "question": question["question"],
                 "a": question.get("a", ""),
+                "b": question.get("b", ""),
+                "c": question.get("c", ""),
+                "d": question.get("d", ""),
+                "source": "VISION IAS PRELIMS-2024 _TEST- 01-32.PDF",
                 "answer": self.explanations.get(question_no, {}).get('answer'),
                 "explanation": self.explanations.get(question_no, {}).get('explanation')
             }
