@@ -1,13 +1,15 @@
-from recipe.insights import main
 import time
 import sys
+from recipe.vision import main
 
 
 def run_script():
     retries = 5
     for attempt in range(1, retries + 1):
         try:
-            main()  # Attempt to run your main script logic
+            # Attempt to run your main script logic
+            main(pdf_path="./data/vision/GS_TEST_1_-_INDIAN_POLITY_AND_.pdf",
+                 output_path="./data/vision/output/gs_test1.csv", pages=range(1, 20))
             print("Script ran successfully. Shutting down.")
             sys.exit(0)  # Shut down if successful
         except Exception as e:

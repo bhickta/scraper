@@ -101,9 +101,9 @@ class VisionMCQExtractor(MCQExtractor):
         self.get_mcqs()
 
 
-if __name__ == "__main__":
-    pdf_service = PDFService("./data/VISION IAS PRELIMS-2024 _TEST- 01-32.PDF")
+def main(pdf_path, output_path, pages):
+    pdf_service = PDFService(pdf_path)
     extractor = VisionMCQExtractor(
-        pdf_service=pdf_service, output_path="vision_mcqs.csv")
-    extractor.run(pages=range(1, 59))
+        pdf_service=pdf_service, output_path=output_path)
+    extractor.run(pages=pages)
     extractor.to_csv()
