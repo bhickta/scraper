@@ -1,4 +1,4 @@
-from core import re, json, csv
+from core import re, json, csv, os
 from core.services.pdf_service import PDFService
 
 
@@ -10,29 +10,30 @@ class MCQExtractor:
     def process_mcqs(self):
         pass
 
-    def to_json(self):
-        with open(self.output_path, "w", encoding="utf-8") as f:
+    def to_json(self, output_path=None, mode="w"):
+        with open(output_path, mode=mode, encoding="utf-8") as f:
             json.dump(self.mcqs, f, indent=4, ensure_ascii=False)
 
-    def to_csv(self):
-        with open(self.output_path, mode="w", newline='', encoding="utf-8") as f:
+    def to_csv(self, output_path=None, mode="w"):
+
+        with open(output_path, mode=mode, encoding="utf-8") as f:
             writer = csv.writer(f)
-            # Writing the header row (if needed)
             writer.writerow(['question', 'answer', 'explanation',
-                            'a', 'b', 'c', 'd', 'e', 'f', 'source'])
+                            'a', 'b', 'c', 'd', 'e', 'f', 'source', 'subject'])
 
             for mcq in self.mcqs:
                 writer.writerow([
                     mcq['question'],
                     mcq['answer'],
-                    mcq['explanation'],
+                    mcq.get('explanation', ''),
                     mcq['a'],
                     mcq['b'],
                     mcq['c'],
                     mcq['d'],
                     mcq.get('e', ''),
                     mcq.get('f', ''),
-                    mcq['source']
+                    mcq['source'],
+                    mcq["subject"],
                 ])
 
     def run(self, pages=None):

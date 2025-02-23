@@ -1,15 +1,17 @@
 import time
 import sys
-from recipe.vision import main
+from recipe.arihant import main, subjects
 
 
 def run_script():
-    retries = 5
+    retries = 1
     for attempt in range(1, retries + 1):
         try:
-            # Attempt to run your main script logic
-            main(pdf_path="./data/vision/GS_TEST_1_-_INDIAN_POLITY_AND_.pdf",
-                 output_path="./data/vision/output/gs_test1.csv", pages=range(1, 20))
+            for subject, page_range in subjects():
+                subject = subject + " : " + str(page_range)
+                print(f"Running script for {subject}")
+                main(pdf_path="./data/arihant/arihantMCQ.pdf",
+                     output_path=f"./data/arihant/output/{subject}.json", pages=page_range, subject=subject)
             print("Script ran successfully. Shutting down.")
             sys.exit(0)  # Shut down if successful
         except Exception as e:
