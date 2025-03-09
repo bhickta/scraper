@@ -23,21 +23,21 @@ class Scraper:
 
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
     def fetch_page(self):
-        headers = {
-            "User-Agent": self.ua.random,
-        }
+        headers = {"User-Agent": self.ua.random}
         self.session.headers.update(headers)
+
         response = self.session.get(self.base_url, timeout=10)
 
+        if response.status_code == 404:
+            # logger.warning(f"Page not found: {self.base_url} (404)")
+            return ""
+
         if response.status_code != 200:
-            logger.error(
-                f"Failed to fetch the page: {
-                    self.base_url} (Status Code: {response.status_code})"
-            )
+            pass
+            # logger.error(
+            # f"Failed to fetch the page: {self.base_url} (Status Code: {response.status_code})")
             raise Exception(
-                f"Failed to fetch the page: {
-                    self.base_url} (Status Code: {response.status_code})"
-            )
+                f"Failed to fetch the page: {self.base_url} (Status Code: {response.status_code})")
 
         return response.text
 

@@ -21,5 +21,5 @@ def run_script():
 
 
 if __name__ == "__main__":
-    _gst_main(csv_file_path="data/gst_details.csv",
-              csv_output_path="gst_dump.csv")
+    _gst_main(input_csv="data/gst_details.csv",
+              output_csv="gst_dump.csv")
