@@ -2,7 +2,7 @@ import fitz
 
 
 class PDFService:
-    def __init__(self, pdf_path):
+    def __init__(self, pdf_path, **kwargs):
         self.pdf_path = pdf_path
 
     def extract_text_dict(self, pages=None):

@@ -1,9 +1,8 @@
 {
     "name": "Python Dev Container",
-    "image": "mcr.microsoft.com/devcontainers/python:3.12",
-    "features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
-    },
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "dev",
+    "workspaceFolder": "/workspaces/scraper",
     "customizations": {
         "vscode": {
             "settings": {
@@ -16,11 +15,5 @@
         }
     },
     "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt",
-    "remoteUser": "vscode",
-    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/scraper,type=bind",
-    "workspaceFolder": "/workspaces/scraper",
-    "shutdownAction": "stopCompose",
-    "mounts": [
-        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
-    ]
+    "shutdownAction": "stopCompose"
 }

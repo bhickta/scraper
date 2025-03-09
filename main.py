@@ -1,17 +1,15 @@
 import time
 import sys
-from recipe.arihant import main, subjects
+from recipe.dggca import main
+from recipe.gst import main as _gst_main
 
 
 def run_script():
     retries = 1
     for attempt in range(1, retries + 1):
         try:
-            for subject, page_range in subjects():
-                subject = subject + " : " + str(page_range)
-                print(f"Running script for {subject}")
-                main(pdf_path="./data/arihant/arihantMCQ.pdf",
-                     output_path=f"./data/arihant/output/{subject}.json", pages=page_range, subject=subject)
+            main(pdf_path="./data/dggca/dggJan2025.pdf",
+                 output_path="./data/dggca/output/dggJan2025.csv", pages=None, source="ddgJan2025")
             print("Script ran successfully. Shutting down.")
             sys.exit(0)  # Shut down if successful
         except Exception as e:
@@ -23,4 +21,5 @@ def run_script():
 
 
 if __name__ == "__main__":
-    run_script()
+    _gst_main(csv_file_path="data/gst_details.csv",
+              csv_output_path="gst_dump.csv")

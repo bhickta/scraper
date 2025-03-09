@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  dev:
+    image: mcr.microsoft.com/devcontainers/python:3.12
+    container_name: python_dev
+    privileged: true
+    volumes:
+      - ..:/workspaces/scraper:cached
+      - ~/.ssh:/home/vscode/.ssh:cached
+    environment:
+      - DISPLAY=:99
+    command: sleep infinity
+    networks:
+      - selenium_net
+    depends_on:
+      - selenium-hub
+
+  selenium-hub:
+    image: selenium/hub:4.12.1
+    container_name: selenium-hub
+    ports:
+      - "4444:4444"
+    networks:
+      - selenium_net
+
+  selenium-chrome:
+    image: selenium/node-chrome:4.12.1
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    shm_size: 2g
+    networks:
+      - selenium_net
+
+networks:
+  selenium_net:
+    driver: bridge

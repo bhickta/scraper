@@ -3,6 +3,7 @@ from utils.scraper import MicroTopicsIasscoreUrls, MicroTopicsIasscore
 import json
 import os
 
+
 def main():
     def get_url():
         return "https://iasscore.in/upsc-syllabus/history/ancient-history"
@@ -26,7 +27,7 @@ def main():
             export_to_json(topics, filepath)
         except Exception as e:
             raise e
-    
+
     def convert_splitting_themes(topics):
         split_topics = []
         for topic in topics[:]:
@@ -49,5 +50,5 @@ def main():
             print(f"Topics successfully exported to {filename}")
         except Exception as e:
             print(f"Failed to export to JSON: {e}")
-    
+
     extract(url=get_url())
