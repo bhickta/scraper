@@ -3,41 +3,53 @@ from core import (
     UserAgent,
     retry,
     stop_after_attempt,
-    wait_fixed,
+    wait_exponential,
     RetryError,
     logger,
     requests,
     BeautifulSoup,
     re,
+    time,
+    random,
     json
 )
 
 
 class Scraper:
     def __init__(self, **kwargs):
-        self.base_url = kwargs.get('base_url').strip(
-        ) if kwargs.get('base_url') else None
+        self.base_url = kwargs.get('base_url', '').strip()
         self.content = kwargs.get('content')
         self.ua = UserAgent()
         self.session = requests.Session()
 
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
+    @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=2, min=5, max=30), reraise=True)
     def fetch_page(self):
-        headers = {"User-Agent": self.ua.random}
+        headers = {
+            "User-Agent": self.ua.random,
+            "Accept-Language": "en-US,en;q=0.9"
+        }
         self.session.headers.update(headers)
+
+        delay = random.uniform(2, 5)
+        logger.info(
+            f"Waiting {delay:.2f} seconds before request to {self.base_url}")
+        time.sleep(delay)
 
         response = self.session.get(self.base_url, timeout=10)
 
         if response.status_code == 404:
-            # logger.warning(f"Page not found: {self.base_url} (404)")
+            logger.warning(f"Page not found: {self.base_url} (404)")
             return ""
 
+        if response.status_code == 429:
+            logger.warning(f"Rate limit hit! Retrying... ({self.base_url})")
+            raise Exception(f"Too many requests: {self.base_url} (429)")
+
         if response.status_code != 200:
-            pass
-            # logger.error(
-            # f"Failed to fetch the page: {self.base_url} (Status Code: {response.status_code})")
+            logger.error(
+                f"Failed to fetch {self.base_url} (Status Code: {response.status_code})")
             raise Exception(
-                f"Failed to fetch the page: {self.base_url} (Status Code: {response.status_code})")
+                f"Failed to fetch {self.base_url} (Status Code: {response.status_code})")
 
         return response.text
 
@@ -50,8 +62,8 @@ class Scraper:
             self.pre_parse(html_content)
             return self.parse_page()
         except RetryError as e:
-            logger.error(f"Retries failed for {
-                         self.base_url}. Error: {str(e)}")
+            logger.error(
+                f"Retries failed for {self.base_url}. Error: {str(e)}")
             raise
 
     def parse_page(self):
