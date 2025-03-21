@@ -8,3 +8,5 @@ fake-useragent
 sqlalchemy
 tqdm
 PyMuPDF
+pandas
+openpyxl
