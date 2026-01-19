@@ -1,13 +1,18 @@
+"""
+Optimized Rapl Filler - Pre-deduplication Strategy
+
+This script first extracts unique GSTINs, scrapes them once, then fills all rows.
+Much faster than row-by-row processing!
+"""
+
 import pandas as pd
 import logging
-import time
 import os
 import sys
 import json
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Lock
-import random
 import signal
 
 # Add project root to path
@@ -15,32 +20,34 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 from src.services.gst_data_service import GstDataService
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+# Configure logging - clean output
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# Silence all third-party library logs
+logging.getLogger('urllib3').setLevel(logging.CRITICAL)
+logging.getLogger('src.core.base_scraper').setLevel(logging.CRITICAL)
+logging.getLogger('src.services.gst_data_service').setLevel(logging.CRITICAL)
 
 INPUT_FILE = "data/input/Estimated Data Rapl.xlsx"
 OUTPUT_FILE = "data/input/Estimated Data Rapl_filled.xlsx"
-CHECKPOINT_FILE = "data/input/.rapl_checkpoint.json"
-
-# Thread-safe locks
-file_lock = Lock()
-cache_lock = Lock()
+CHECKPOINT_FILE = "data/input/.rapl_checkpoint_v2.json"
 
 # Configuration
-MAX_WORKERS = 8  # Increased for 12 CPU system (keeping some headroom to avoid IP blocking)
-BATCH_SIZE = 10  # Save to file after every N successful scrapes
+MAX_WORKERS = 3
+BATCH_SIZE = 10
 
-# Global flag for graceful shutdown
+# Global shutdown flag
 shutdown_requested = False
+cache_lock = Lock()
 
 def signal_handler(signum, frame):
     """Handle Ctrl+C gracefully."""
     global shutdown_requested
-    logger.warning("\n⚠️  Shutdown requested. Saving progress and exiting gracefully...")
+    logger.warning("\n⚠️  Shutdown requested. Saving progress...")
     shutdown_requested = True
 
-# Register signal handler
 signal.signal(signal.SIGINT, signal_handler)
 
 def load_checkpoint():
@@ -48,140 +55,62 @@ def load_checkpoint():
     if os.path.exists(CHECKPOINT_FILE):
         with open(CHECKPOINT_FILE, 'r') as f:
             return json.load(f)
-    return {"processed_rows": [], "gstin_cache": {}}
+    return {"gstin_cache": {}}
 
-def save_checkpoint(processed_rows, gstin_cache):
+def save_checkpoint(gstin_cache):
     """Save checkpoint data."""
     with cache_lock:
         with open(CHECKPOINT_FILE, 'w') as f:
-            json.dump({
-                "processed_rows": processed_rows,
-                "gstin_cache": gstin_cache
-            }, f)
+            json.dump({"gstin_cache": gstin_cache}, f, indent=2)
 
-def process_row(index, row, gst_service: GstDataService):
-    """Process a single row using the GST data service."""
-    if shutdown_requested:
-        return {'index': index, 'success': False, 'data': None}
+def extract_unique_gstins(df):
+    """Extract unique GSTINs from the dataframe."""
+    unique_gstins = df['GSTIN'].dropna().astype(str).str.strip()
+    unique_gstins = unique_gstins[unique_gstins != ''].unique()
+    return list(unique_gstins)
+
+def scrape_unique_gstins(unique_gstins, gst_service):
+    """Scrape all unique GSTINs in parallel."""
+    logger.info(f"📥 Scraping {len(unique_gstins)} unique GSTINs...")
+    
+    results = []
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = {executor.submit(gst_service.get_gst_data, gstin): gstin 
+                   for gstin in unique_gstins}
         
-    result = {
-        'index': index,
-        'success': False,
-        'data': None
-    }
+        with tqdm(total=len(unique_gstins), desc="Scraping GSTINs", unit="GSTIN") as pbar:
+            batch_count = 0
+            for future in as_completed(futures):
+                if shutdown_requested:
+                    logger.info("Cancelling remaining tasks...")
+                    gst_service.shutdown()
+                    break
+                
+                gstin = futures[future]
+                try:
+                    data = future.result()
+                    results.append((gstin, data))
+                    
+                    # Save checkpoint periodically
+                    batch_count += 1
+                    if batch_count >= BATCH_SIZE:
+                        save_checkpoint(gst_service.cache)
+                        batch_count = 0
+                        
+                except Exception as e:
+                    logger.error(f"Error processing {gstin}: {e}")
+                
+                pbar.update(1)
     
-    gstin = str(row['GSTIN']).strip()
-    if not gstin or pd.isna(row['GSTIN']):
-        logger.warning(f"Row {index}: Missing GSTIN, skipping scraping.")
-        return result
-    
-    # Use the decoupled GST data service
-    data = gst_service.get_gst_data(gstin)
-    
-    if data:
-        result['success'] = True
-        result['data'] = {
-            'Customer Name': data.get('Legal Name', 'N/A') if (pd.isna(row['Customer Name']) or str(row['Customer Name']).strip() == '') else None,
-            'Trade Name Fallback': data.get('Trade Name', 'N/A'),
-            'Address': data.get('Principal Place', 'N/A') if (pd.isna(row['Address']) or str(row['Address']).strip() == '') else None,
-            'Type': data.get('Constitution', 'N/A'),
-            'Legal Name': data.get('Legal Name', 'N/A'),
-            'Trade Name': data.get('Trade Name', 'N/A'),
-            'Status': data.get('Status', 'N/A'),
-            'Registration Date': data.get('Registration Date', 'N/A'),
-            'City': data.get('City', 'N/A'),
-            'District': data.get('District', 'N/A'),
-            'State': data.get('State', 'N/A'),
-            'Pincode': data.get('Pincode', 'N/A'),
-            'E-Invoice Mandatory': data.get('E-Invoice Mandatory', 'N/A'),
-            'Aggregate Turnover': data.get('Aggregate Turnover', 'N/A'),
-            'Central Jurisdiction': data.get('Central Jurisdiction', 'N/A'),
-            'State Jurisdiction': data.get('State Jurisdiction', 'N/A'),
-            'HSN Codes': data.get('HSN Codes', 'N/A'),
-        }
-    
-    return result
+    # Final checkpoint save
+    save_checkpoint(gst_service.cache)
+    return results
 
-def update_dataframe(df, results):
-    """Update dataframe with results and save to file."""
-    for result in results:
-        if not result['success']:
-            continue
-            
-        index = result['index']
-        data = result['data']
-        
-        # Fill name if missing
-        if data['Customer Name'] is not None:
-            legal_name = data['Customer Name']
-            trade_name = data['Trade Name Fallback']
-            final_name = legal_name if legal_name != 'N/A' else trade_name
-            df.at[index, 'Customer Name'] = final_name
-        
-        # Fill address if missing
-        if data['Address'] is not None:
-            df.at[index, 'Address'] = data['Address']
-        
-        # Update Type if it was N/A
-        if df.at[index, 'Type'] == 'N/A':
-            df.at[index, 'Type'] = data['Type']
-        
-        # Always populate structured fields (for ERPNext and additional data)
-        df.at[index, 'Legal Name'] = data['Legal Name']
-        df.at[index, 'Trade Name'] = data['Trade Name']
-        df.at[index, 'Status'] = data['Status']
-        df.at[index, 'Registration Date'] = data['Registration Date']
-        df.at[index, 'City'] = data['City']
-        df.at[index, 'District'] = data['District']
-        df.at[index, 'State'] = data['State']
-        df.at[index, 'Pincode'] = data['Pincode']
-        df.at[index, 'E-Invoice Mandatory'] = data['E-Invoice Mandatory']
-        df.at[index, 'Aggregate Turnover'] = data['Aggregate Turnover']
-        df.at[index, 'Central Jurisdiction'] = data['Central Jurisdiction']
-        df.at[index, 'State Jurisdiction'] = data['State Jurisdiction']
-        df.at[index, 'HSN Codes'] = data['HSN Codes']
+def fill_dataframe(df, gst_service):
+    """Fill all rows using the cached GSTIN data."""
+    logger.info("📝 Filling Excel rows from cache...")
     
-    # Save to file immediately
-    with file_lock:
-        df.to_excel(OUTPUT_FILE, index=False)
-
-def fill_missing_data():
-    if not os.path.exists(INPUT_FILE):
-        logger.error(f"Input file not found: {INPUT_FILE}")
-        return
-
-    # Create backup before processing
-    from datetime import datetime
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup_file = INPUT_FILE.replace('.xlsx', f'_backup_{timestamp}.xlsx')
-    
-    try:
-        import shutil
-        shutil.copy2(INPUT_FILE, backup_file)
-        logger.info(f"✓ Backup created: {backup_file}")
-    except Exception as e:
-        logger.error(f"Failed to create backup: {e}")
-        response = input("Continue without backup? (yes/no): ")
-        if response.lower() != 'yes':
-            logger.info("Aborted by user.")
-            return
-
-    logger.info(f"Loading data from {INPUT_FILE}...")
-    try:
-        df = pd.read_excel(INPUT_FILE)
-    except Exception as e:
-        logger.error(f"Failed to read Excel file: {e}")
-        return
-
-    # Load checkpoint
-    checkpoint = load_checkpoint()
-    gstin_cache = checkpoint.get("gstin_cache", {})
-    processed_rows = set(checkpoint.get("processed_rows", []))
-    
-    # Initialize the decoupled GST data service
-    gst_service = GstDataService(cache=gstin_cache, cache_lock=cache_lock)
-
-    # Initialize new columns if they don't exist
+    # Initialize new columns
     new_columns = [
         'Legal Name', 'Trade Name', 'Status', 'Registration Date',
         'City', 'District', 'State', 'Pincode',
@@ -191,98 +120,114 @@ def fill_missing_data():
     for col in new_columns:
         if col not in df.columns:
             df[col] = None
-
-    total_rows = len(df)
-    logger.info(f"Total rows: {total_rows}")
-    logger.info(f"Already processed: {len(processed_rows)} rows")
-
-    # Count rows that need processing
-    rows_to_process = []
-    for index, row in df.iterrows():
-        if index in processed_rows:
+    
+    filled_count = 0
+    for index, row in tqdm(df.iterrows(), total=len(df), desc="Filling rows", unit="row"):
+        gstin = str(row['GSTIN']).strip() if pd.notna(row['GSTIN']) else None
+        
+        if not gstin:
             continue
         
-        # Fill defaults for other columns (convert to string to avoid dtype warning)
-        if pd.isna(row.get('Code')): 
-            df.at[index, 'Code'] = str('N/A')
-        if pd.isna(row.get('Type')): 
-            df.at[index, 'Type'] = str('N/A')
-        if pd.isna(row.get('Remark')): 
-            df.at[index, 'Remark'] = str('N/A')
-        if pd.isna(row.get('Customer Group')): 
-            df.at[index, 'Customer Group'] = str('N/A')
+        # Get from cache (should be instant!)
+        data = gst_service.get_gst_data(gstin)
+        
+        if data:
+            # Fill missing Customer Name
+            if pd.isna(row.get('Customer Name')) or str(row.get('Customer Name', '')).strip() == '':
+                df.at[index, 'Customer Name'] = data.get('Legal Name', 'N/A')
             
-        # Check if we need to scrape this row
-        name_missing = pd.isna(row.get('Customer Name')) or str(row.get('Customer Name', '')).strip() == ''
-        address_missing = pd.isna(row.get('Address')) or str(row.get('Address', '')).strip() == ''
-        
-        # Check if structured fields are missing (for ERPNext)
-        city_missing = pd.isna(row.get('City')) or str(row.get('City', '')).strip() == ''
-        state_missing = pd.isna(row.get('State')) or str(row.get('State', '')).strip() == ''
-        pincode_missing = pd.isna(row.get('Pincode')) or str(row.get('Pincode', '')).strip() == ''
-        
-        # Scrape if ANY critical field is missing
-        if name_missing or address_missing or city_missing or state_missing or pincode_missing:
-            rows_to_process.append((index, row))
-
-    logger.info(f"Rows needing processing: {len(rows_to_process)}")
+            # Fill missing Address
+            if pd.isna(row.get('Address')) or str(row.get('Address', '')).strip() == '':
+                df.at[index, 'Address'] = data.get('Principal Place', 'N/A')
+            
+            # Fill Type and all new fields
+            df.at[index, 'Type'] = data.get('Constitution', 'N/A')
+            df.at[index, 'Legal Name'] = data.get('Legal Name', 'N/A')
+            df.at[index, 'Trade Name'] = data.get('Trade Name', 'N/A')
+            df.at[index, 'Status'] = data.get('Status', 'N/A')
+            df.at[index, 'Registration Date'] = data.get('Registration Date', 'N/A')
+            df.at[index, 'City'] = data.get('City', 'N/A')
+            df.at[index, 'District'] = data.get('District', 'N/A')
+            df.at[index, 'State'] = data.get('State', 'N/A')
+            df.at[index, 'Pincode'] = data.get('Pincode', 'N/A')
+            df.at[index, 'E-Invoice Mandatory'] = data.get('E-Invoice Mandatory', 'N/A')
+            df.at[index, 'Aggregate Turnover'] = data.get('Aggregate Turnover', 'N/A')
+            df.at[index, 'Central Jurisdiction'] = data.get('Central Jurisdiction', 'N/A')
+            df.at[index, 'State Jurisdiction'] = data.get('State Jurisdiction', 'N/A')
+            df.at[index, 'HSN Codes'] = data.get('HSN Codes', 'N/A')
+            
+            filled_count += 1
     
-    if not rows_to_process:
-        logger.info("No rows need processing. Saving file...")
-        df.to_excel(OUTPUT_FILE, index=False)
-        logger.info("Done.")
-        return
+    logger.info(f"✓ Filled {filled_count} rows from cache")
+    return df
 
-    # Process rows in parallel with batching
-    total_to_process = len(rows_to_process)
-    batch_results = []
+def main():
+    """Main execution flow."""
+    logger.info("🚀 Starting optimized Rapl data filler (pre-deduplication strategy)")
     
+    # Create backup
+    from datetime import datetime
+    import shutil
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_file = INPUT_FILE.replace('.xlsx', f'_backup_{timestamp}.xlsx')
     try:
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            futures = {executor.submit(process_row, idx, row, gst_service): idx for idx, row in rows_to_process}
-            
-            with tqdm(total=total_to_process, desc="Processing rows", unit="row") as pbar:
-                for future in as_completed(futures):
-                    if shutdown_requested:
-                        logger.info("Cancelling remaining tasks...")
-                        gst_service.shutdown()
-                        break
-                        
-                    result = future.result()
-                    batch_results.append(result)
-                    processed_rows.add(result['index'])
-                    pbar.update(1)
-                    
-                    # Save batch and checkpoint
-                    if len(batch_results) >= BATCH_SIZE:
-                        update_dataframe(df, batch_results)
-                        save_checkpoint(list(processed_rows), gstin_cache)
-                        batch_results = []
-    except KeyboardInterrupt:
-        logger.warning("Interrupted by user")
-        gst_service.shutdown()
+        shutil.copy2(INPUT_FILE, backup_file)
+        logger.info(f"✓ Backup created: {backup_file}")
+    except Exception as e:
+        logger.warning(f"Could not create backup: {e}")
     
-    # Save any remaining results
-    if batch_results:
-        logger.info("Saving remaining results...")
-        update_dataframe(df, batch_results)
+    # Load data
+    logger.info(f"📂 Loading {INPUT_FILE}...")
+    df = pd.read_excel(INPUT_FILE)
+    logger.info(f"✓ Loaded {len(df)} rows")
     
-    # Log cache statistics
+    # Load checkpoint and initialize service
+    checkpoint = load_checkpoint()
+    gstin_cache = checkpoint.get("gstin_cache", {})
+    gst_service = GstDataService(cache=gstin_cache, cache_lock=cache_lock)
+    
+    # Extract unique GSTINs
+    unique_gstins = extract_unique_gstins(df)
+    logger.info(f"✓ Found {len(unique_gstins)} unique GSTINs")
+    
+    # Filter out already cached GSTINs
+    uncached_gstins = [g for g in unique_gstins if g not in gstin_cache]
+    logger.info(f"✓ {len(gstin_cache)} already cached, {len(uncached_gstins)} need scraping")
+    
+    # Scrape uncached GSTINs
+    if uncached_gstins and not shutdown_requested:
+        scrape_unique_gstins(uncached_gstins, gst_service)
+    
+    # Show cache stats
     stats = gst_service.get_cache_stats()
-    logger.info(f"Cache stats: {stats['successful']} successful, {stats['failed']} failed, {stats['total_cached']} total")
+    logger.info(f"📊 Cache: {stats['successful']} successful, {stats['failed']} failed, {stats['total_cached']} total")
     
-    logger.info(f"Saving final data to {OUTPUT_FILE}...")
-    with file_lock:
+    # Fill all rows from cache
+    if not shutdown_requested:
+        df = fill_dataframe(df, gst_service)
+        
+        # Deduplicate by GSTIN (keep first occurrence)
+        logger.info("🔍 Checking for duplicate GSTINs...")
+        original_count = len(df)
+        df_deduped = df.drop_duplicates(subset=['GSTIN'], keep='first')
+        duplicates_removed = original_count - len(df_deduped)
+        
+        if duplicates_removed > 0:
+            logger.info(f"✓ Removed {duplicates_removed} duplicate GSTINs (kept first occurrence)")
+            df = df_deduped
+        else:
+            logger.info("✓ No duplicate GSTINs found")
+        
+        # Save output
+        logger.info(f"💾 Saving {len(df)} unique rows to {OUTPUT_FILE}...")
         df.to_excel(OUTPUT_FILE, index=False)
-    save_checkpoint(list(processed_rows), gstin_cache)
-    
-    if shutdown_requested:
-        logger.info(f"✓ Progress saved! Processed {len(processed_rows)} rows. Run again to resume.")
-    else:
-        # Clean up checkpoint file only if completed
+        logger.info("✅ All done!")
+        
+        # Clean up checkpoint
         if os.path.exists(CHECKPOINT_FILE):
             os.remove(CHECKPOINT_FILE)
-        logger.info("✓ All done!")
+    else:
+        logger.info("⚠️  Interrupted. Run again to resume from checkpoint.")
 
 if __name__ == "__main__":
-    fill_missing_data()
+    main()
