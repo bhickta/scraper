@@ -1,16 +1,21 @@
 import re
 import unicodedata
-from core.services.pdf_service import PDFService
-from core import csv, os
+from typing import Any, Dict, List
+from src.core.base_pdf import BasePDFExtractor
 
+class DggcaExtractor(BasePDFExtractor):
+    """
+    Extractor for DGGCA PDF documents.
+    """
 
-class QuestionParser:
-    def __init__(self, text, **kwargs):
-        self.text = self.normalize_text(text)
-        with open('input.txt', 'w', encoding='utf-8') as f:
-            f.write(self.text)
-        self.questions = []
-        self.source = kwargs.get("source")
+    def parse(self, text: str) -> List[Dict[str, Any]]:
+        normalized_text = self.normalize_text(text)
+        dates = self.split_dates(normalized_text)
+        all_questions = []
+        for date, content in dates:
+            questions = self.extract_questions(date, content)
+            all_questions.extend(questions)
+        return all_questions
 
     def normalize_text(self, text):
         text = unicodedata.normalize("NFKC", text)  # Normalize Unicode
@@ -26,11 +31,6 @@ class QuestionParser:
         # Fix misplaced spaces around parentheses
         text = text.replace(" (", "(").replace(" )", ")")
         return text.strip()
-
-    def parse(self):
-        dates = self.split_dates(self.text)
-        for date, content in dates:
-            self.extract_questions(date, content)
 
     def split_dates(self, text):
         date_pattern = re.compile(
@@ -53,6 +53,7 @@ class QuestionParser:
         return dates_with_content
 
     def extract_questions(self, date, content):
+        questions = []
         question_pattern = re.compile(
             r'Q\)\s*(.*?)\s*'  # Question
             r'A\.\s*(.*?)\s*'  # Option A
@@ -67,7 +68,7 @@ class QuestionParser:
         matches = question_pattern.findall(content)
         for match in matches:
             question, a, b, c, d, answer, correct_option, explanation = match
-            self.questions.append({
+            questions.append({
                 "metadata": {
                     "date": date},
                 "question": question.strip(),
@@ -77,22 +78,6 @@ class QuestionParser:
                 "d": d.strip(),
                 "answer": answer.strip().lower(),
                 "explanation": explanation.strip() if explanation.strip() else None,
-                "source": self.source,
+                "source": self.kwargs.get("source"),
             })
-
-    def to_csv(self, filename):
-        os.makedirs(os.path.dirname(filename), exist_ok=True)
-
-        with open(filename, mode='w', newline='', encoding='utf-8') as file:
-            writer = csv.DictWriter(file, fieldnames=[
-                                    "metadata", "question", "a", "b", "c", "d", "answer", "explanation", "source"])
-            writer.writeheader()
-            writer.writerows(self.questions)
-
-
-def main(**kwargs):
-    pdf_service = PDFService(kwargs["pdf_path"])
-    parser = QuestionParser(pdf_service.extract_text(
-        pages=kwargs["pages"]), **kwargs)
-    parser.parse()
-    parser.to_csv(kwargs["output_path"])
+        return questions

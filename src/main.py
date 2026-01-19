@@ -1,77 +1,103 @@
-#!/usr/bin/env python3
-"""
-Main entry point for the scraper framework.
-This script demonstrates using various scraper plugins.
-"""
-
 import argparse
-import logging
 import sys
-from pathlib import Path
+import logging
+import csv
+from typing import List
+from src.recipes.dggca_recipe import DggcaExtractor
+from src.recipes.gst_recipe import GstExtractor
 
-from scraper.config.settings import OUTPUT_DIR
-from scraper.utils.logging import configure_file_logging
-from scraper.plugins.gst import main as gst_main
+logger = logging.getLogger(__name__)
 
+def parse_pages(pages_str: str) -> List[int]:
+    """Parse page string '1,2,5-7' into list of integers."""
+    pages = []
+    if not pages_str:
+        return None
+    for part in pages_str.split(','):
+        if '-' in part:
+            start, end = map(int, part.split('-'))
+            pages.extend(range(start, end + 1))
+        else:
+            pages.append(int(part))
+    # fitz uses 0-indexed pages, user likely provides 1-indexed
+    return [p - 1 for p in pages]
 
-def setup_logging():
-    """Configure logging for the application."""
-    log_file = OUTPUT_DIR / "scraper.log"
-    configure_file_logging(log_file)
-    logging.info("Logging configured.")
-
-
-def parse_args():
-    """Parse command line arguments."""
-    parser = argparse.ArgumentParser(description="Web scraper framework")
-    parser.add_argument("--plugin", choices=["gst"], default="gst",
-                        help="Scraper plugin to use")
-    parser.add_argument("--input", required=False,
-                        help="Path to input file (CSV or Excel)")
-    parser.add_argument("--output", required=False,
-                        help="Path to output file (CSV or Excel)")
-    parser.add_argument("--format", choices=["csv", "excel"], default=None,
-                        help="Force output format regardless of file extension")
-
-    return parser.parse_args()
-
+def process_gst_csv(input_csv: str, output_csv: str):
+    """Process GST CSV input."""
+    # This resembles the old logic but uses the new Extractor
+    if not input_csv:
+        logger.error("Input CSV required for GST batch mode")
+        sys.exit(1)
+        
+    logger.info(f"Processing GST CSV: {input_csv}")
+    
+    ids_to_process = []
+    try:
+        with open(input_csv, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if "gstin" in row:
+                    ids_to_process.append(row["gstin"].strip())
+    except FileNotFoundError:
+        logger.error(f"Input file not found: {input_csv}")
+        sys.exit(1)
+    
+    all_data = []
+    extractor = GstExtractor(base_url="") # Dummy URL, updated later
+    
+    for gstin in ids_to_process:
+        if not gstin: continue
+        url = f"https://gst.jamku.app/gstin/{gstin}"
+        logger.info(f"Scraping GSTIN: {gstin}")
+        
+        # We can re-instantiate or just update base_url if possible, 
+        # but re-instantiating is safer for state
+        # Or simpler:
+        extractor = GstExtractor(base_url=url) 
+        
+        try:
+            result = extractor.extract()
+            if result:
+                all_data.extend(result)
+        except Exception as e:
+            logger.error(f"Failed to scrape {gstin}: {e}")
+            
+    # Save results
+    if all_data:
+        extractor.save(all_data, output_csv)
+        logger.info(f"Saved {len(all_data)} records to {output_csv}")
+    else:
+        logger.warning("No data extracted for GST")
 
 def main():
-    """Main entry point for the application."""
-    setup_logging()
-    args = parse_args()
-
-    try:
-        if args.plugin == "gst":
-            # Default input and output files
-            input_file = args.input or "data/gst_details.csv"
-            output_file = args.output or "data/output/gst_dump.csv"
-
-            # Override output extension if format is specified
-            if args.format:
-                output_path = Path(output_file)
-                if args.format == "excel" and output_path.suffix.lower() not in ['.xlsx', '.xls']:
-                    output_file = str(output_path.with_suffix('.xlsx'))
-                elif args.format == "csv" and output_path.suffix.lower() != '.csv':
-                    output_file = str(output_path.with_suffix('.csv'))
-
-            logging.info(f"Using input file: {input_file}")
-            logging.info(f"Using output file: {output_file}")
-
-            # Run the GST scraper
-            gst_main(input_file=input_file, output_file=output_file)
-        # Add more plugins here
+    parser = argparse.ArgumentParser(description="Scraper Tool")
+    parser.add_argument("--source", type=str, required=True, choices=["dggca", "gst"], help="Source to scrape")
+    parser.add_argument("--input", type=str, help="Input file path (PDF for dggca, CSV for gst)")
+    parser.add_argument("--output", type=str, required=True, help="Output file path")
+    parser.add_argument("--pages", type=str, help="Pages to scrape (e.g. '1,2,3' or '1-5') for PDF")
+    
+    args = parser.parse_args()
+    
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+    
+    if args.source == "dggca":
+        if not args.input:
+             logger.error("Error: --input is required for dggca")
+             sys.exit(1)
+        
+        pages = parse_pages(args.pages)
+        extractor = DggcaExtractor(pdf_path=args.input, source=args.source)
+        data = extractor.extract(pages=pages)
+        extractor.save(data, args.output)
+        logger.info(f"DGGCA extraction complete. Saved to {args.output}")
+        
+    elif args.source == "gst":
+        # Check if input is a CSV file
+        if args.input:
+            process_gst_csv(args.input, args.output)
         else:
-            print(f"Plugin {args.plugin} not found")
-            sys.exit(1)
-
-    except Exception as e:
-        logging.error(f"Error running {args.plugin} plugin: {e}")
-        sys.exit(1)
-
-    logging.info("Scraping completed successfully")
-    print("Scraping completed successfully")
-
+             logger.error("GST source requires --input pointing to a CSV file")
+             sys.exit(1)
 
 if __name__ == "__main__":
     main()
