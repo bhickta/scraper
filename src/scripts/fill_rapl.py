@@ -10,6 +10,7 @@ import logging
 import os
 import sys
 import json
+import time
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Lock
@@ -18,7 +19,7 @@ import signal
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-from src.services.gst_data_service import GstDataService
+
 
 # Configure logging - clean output
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -69,54 +70,9 @@ def extract_unique_gstins(df):
     unique_gstins = unique_gstins[unique_gstins != ''].unique()
     return list(unique_gstins)
 
-"""
-Adaptive Rate Limiting Service
 
-Automatically adjusts delays based on rate limit detection.
-"""
+from src.services.gst_data_service import GstDataService, AdaptiveRateLimiter
 
-import time
-
-class AdaptiveRateLimiter:
-    """Tracks 429 errors and adjusts delays dynamically."""
-    
-    def __init__(self, base_delay=1.0, max_delay=10.0):
-        self.base_delay = base_delay
-        self.max_delay = max_delay
-        self.current_delay = base_delay
-        self.consecutive_429s = 0
-        self.lock = Lock()
-    
-    def record_success(self):
-        """Record a successful request - gradually reduce delay."""
-        with self.lock:
-            self.consecutive_429s = 0
-            # Slowly decrease delay back to base
-            self.current_delay = max(self.base_delay, self.current_delay * 0.95)
-    
-    def record_429(self):
-        """Record a 429 error - increase delay exponentially."""
-        with self.lock:
-            self.consecutive_429s += 1
-            # Double the delay, up to max
-            self.current_delay = min(self.max_delay, self.current_delay * 2)
-            logger.warning(f"⚠️  Rate limit detected! Slowing down to {self.current_delay:.1f}s delay (429 count: {self.consecutive_429s})")
-    
-    def get_delay(self):
-        """Get current delay with some randomness."""
-        with self.lock:
-            import random
-            # Add ±20% randomness
-            return self.current_delay * random.uniform(0.8, 1.2)
-    
-    def should_pause(self):
-        """Check if we should take a longer break."""
-        with self.lock:
-            # If we've hit 5+ consecutive 429s, take a long break
-            if self.consecutive_429s >= 5:
-                logger.warning(f"🛑 Too many rate limits ({self.consecutive_429s})! Taking 30s break...")
-                return 30
-            return 0
 
 def scrape_unique_gstins(unique_gstins, gst_service, rate_limiter):
     """Scrape all unique GSTINs in parallel with adaptive rate limiting."""
