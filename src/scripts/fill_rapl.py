@@ -69,13 +69,62 @@ def extract_unique_gstins(df):
     unique_gstins = unique_gstins[unique_gstins != ''].unique()
     return list(unique_gstins)
 
-def scrape_unique_gstins(unique_gstins, gst_service):
-    """Scrape all unique GSTINs in parallel."""
+"""
+Adaptive Rate Limiting Service
+
+Automatically adjusts delays based on rate limit detection.
+"""
+
+import time
+
+class AdaptiveRateLimiter:
+    """Tracks 429 errors and adjusts delays dynamically."""
+    
+    def __init__(self, base_delay=1.0, max_delay=10.0):
+        self.base_delay = base_delay
+        self.max_delay = max_delay
+        self.current_delay = base_delay
+        self.consecutive_429s = 0
+        self.lock = Lock()
+    
+    def record_success(self):
+        """Record a successful request - gradually reduce delay."""
+        with self.lock:
+            self.consecutive_429s = 0
+            # Slowly decrease delay back to base
+            self.current_delay = max(self.base_delay, self.current_delay * 0.95)
+    
+    def record_429(self):
+        """Record a 429 error - increase delay exponentially."""
+        with self.lock:
+            self.consecutive_429s += 1
+            # Double the delay, up to max
+            self.current_delay = min(self.max_delay, self.current_delay * 2)
+            logger.warning(f"⚠️  Rate limit detected! Slowing down to {self.current_delay:.1f}s delay (429 count: {self.consecutive_429s})")
+    
+    def get_delay(self):
+        """Get current delay with some randomness."""
+        with self.lock:
+            import random
+            # Add ±20% randomness
+            return self.current_delay * random.uniform(0.8, 1.2)
+    
+    def should_pause(self):
+        """Check if we should take a longer break."""
+        with self.lock:
+            # If we've hit 5+ consecutive 429s, take a long break
+            if self.consecutive_429s >= 5:
+                logger.warning(f"🛑 Too many rate limits ({self.consecutive_429s})! Taking 30s break...")
+                return 30
+            return 0
+
+def scrape_unique_gstins(unique_gstins, gst_service, rate_limiter):
+    """Scrape all unique GSTINs in parallel with adaptive rate limiting."""
     logger.info(f"📥 Scraping {len(unique_gstins)} unique GSTINs...")
     
     results = []
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = {executor.submit(gst_service.get_gst_data, gstin): gstin 
+        futures = {executor.submit(scrape_with_rate_limit, gstin, gst_service, rate_limiter): gstin 
                    for gstin in unique_gstins}
         
         with tqdm(total=len(unique_gstins), desc="Scraping GSTINs", unit="GSTIN") as pbar:
@@ -88,8 +137,19 @@ def scrape_unique_gstins(unique_gstins, gst_service):
                 
                 gstin = futures[future]
                 try:
-                    data = future.result()
+                    data, had_429 = future.result()
                     results.append((gstin, data))
+                    
+                    # Update rate limiter
+                    if had_429:
+                        rate_limiter.record_429()
+                        # Check if we need a long pause
+                        pause = rate_limiter.should_pause()
+                        if pause > 0:
+                            time.sleep(pause)
+                            rate_limiter.consecutive_429s = 0  # Reset after break
+                    else:
+                        rate_limiter.record_success()
                     
                     # Save checkpoint periodically
                     batch_count += 1
@@ -105,6 +165,24 @@ def scrape_unique_gstins(unique_gstins, gst_service):
     # Final checkpoint save
     save_checkpoint(gst_service.cache)
     return results
+
+def scrape_with_rate_limit(gstin, gst_service, rate_limiter):
+    """Scrape a single GSTIN with adaptive rate limiting."""
+    # Apply adaptive delay before request
+    delay = rate_limiter.get_delay()
+    time.sleep(delay)
+    
+    # Track if we encountered 429
+    had_429 = False
+    
+    try:
+        data = gst_service.get_gst_data(gstin)
+        return data, had_429
+    except Exception as e:
+        # Check if it's a rate limit error
+        if '429' in str(e) or 'Too many requests' in str(e):
+            had_429 = True
+        raise
 
 def fill_dataframe(df, gst_service):
     """Fill all rows using the cached GSTIN data."""
@@ -163,6 +241,11 @@ def fill_dataframe(df, gst_service):
 
 def main():
     """Main execution flow."""
+    import argparse
+    parser = argparse.ArgumentParser(description="Optimized Rapl Data Filler")
+    parser.add_argument("--retry-failed", action="store_true", help="Retry GSTINs that failed (marked as null) in previous runs")
+    args = parser.parse_args()
+
     logger.info("🚀 Starting optimized Rapl data filler (pre-deduplication strategy)")
     
     # Create backup
@@ -181,22 +264,41 @@ def main():
     df = pd.read_excel(INPUT_FILE)
     logger.info(f"✓ Loaded {len(df)} rows")
     
-    # Load checkpoint and initialize service
+    # Load checkpoint
     checkpoint = load_checkpoint()
     gstin_cache = checkpoint.get("gstin_cache", {})
+    
+    # Initialize service with cache (loaded from file)
     gst_service = GstDataService(cache=gstin_cache, cache_lock=cache_lock)
+    
+    # Initialize adaptive rate limiter
+    rate_limiter = AdaptiveRateLimiter(base_delay=1.0, max_delay=10.0)
+    logger.info("✓ Adaptive rate limiting enabled (1s-10s delays)")
     
     # Extract unique GSTINs
     unique_gstins = extract_unique_gstins(df)
     logger.info(f"✓ Found {len(unique_gstins)} unique GSTINs")
     
-    # Filter out already cached GSTINs
-    uncached_gstins = [g for g in unique_gstins if g not in gstin_cache]
-    logger.info(f"✓ {len(gstin_cache)} already cached, {len(uncached_gstins)} need scraping")
+    # Filter: Which GSTINs need scraping?
+    # 1. Not in cache at all (Missed ones)
+    # 2. In cache but Null (Failed ones) IF retry is enabled
+    gstins_to_scrape = []
     
-    # Scrape uncached GSTINs
-    if uncached_gstins and not shutdown_requested:
-        scrape_unique_gstins(uncached_gstins, gst_service)
+    for gstin in unique_gstins:
+        if gstin not in gstin_cache:
+            gstins_to_scrape.append(gstin)
+        elif args.retry_failed and gstin_cache[gstin] is None:
+            gstins_to_scrape.append(gstin)
+            # Remove from local cache memory so GstDataService will fetch it
+            del gstin_cache[gstin]
+    
+    logger.info(f"✓ {len(gstin_cache)} valid cached, {len(gstins_to_scrape)} need scraping")
+    if args.retry_failed:
+        logger.info(f"  (Including retries for previously failed items)")
+
+    # Scrape with adaptive rate limiting
+    if gstins_to_scrape and not shutdown_requested:
+        scrape_unique_gstins(gstins_to_scrape, gst_service, rate_limiter)
     
     # Show cache stats
     stats = gst_service.get_cache_stats()
