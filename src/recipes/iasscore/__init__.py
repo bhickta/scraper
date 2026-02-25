@@ -1,54 +1,50 @@
+"""IAS Score recipe — topic scrapers."""
 
-from utils.scraper import MicroTopicsIasscoreUrls, MicroTopicsIasscore
-import json
-import os
+from src.core.base_scraper import BaseScraper
 
 
-def main():
-    def get_url():
-        return "https://iasscore.in/upsc-syllabus/history/ancient-history"
+class MicroTopicsIasscoreUrls(BaseScraper):
+    """Extracts subject URLs from IAS Score."""
 
-    def extract(url):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.urls = []
 
-        topics = []
-        try:
-            filepath = './data/microtopics.json'
-            if os.path.exists(filepath):
-                with open(filepath, 'r') as file:
-                    topics = json.load(file)
-            if not topics:
-                scraper = MicroTopicsIasscoreUrls(base_url=url)
-                scraper.scrape()
-                for url in scraper.urls:
-                    s = MicroTopicsIasscore(base_url=url)
-                    s.scrape()
-                    topics.extend(s.topics)
-            convert_splitting_themes(topics)
-            export_to_json(topics, filepath)
-        except Exception as e:
-            raise e
+    def parse_page(self):
+        subject_url = self.soup.select('li[class=""] > a')
+        self.urls.extend(
+            "https://iasscore.in" + url.get("href") for url in subject_url
+        )
 
-    def convert_splitting_themes(topics):
-        split_topics = []
-        for topic in topics[:]:
-            if "\n" in topic.get("subtheme", ""):
-                split_subthemes = topic["subtheme"].split("\n")
-                topics.remove(topic)
-                for split_subtheme in split_subthemes:
-                    split_topic = dict(topic)
-                    split_topic["subtheme"] = split_subtheme.strip()
-                    split_topics.append(split_topic)
-        topics.extend(split_topics)
 
-    def export_to_json(data, filename):
-        try:
+class MicroTopicsIasscore(BaseScraper):
+    """Extracts micro-topics from IAS Score subject pages."""
 
-            # Write to a JSON file
-            with open(filename, mode="w", encoding="utf-8") as file:
-                json.dump(data, file, indent=4)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.topics = []
 
-            print(f"Topics successfully exported to {filename}")
-        except Exception as e:
-            print(f"Failed to export to JSON: {e}")
-
-    extract(url=get_url())
+    def parse_page(self):
+        self.topics = []
+        subject, section = [
+            " ".join(t.split("-")).title()
+            for t in self.base_url.split("/")[-2:]
+        ]
+        bricks = self.soup.select(".brick")
+        for brick in bricks:
+            topic = brick.select_one(".title").text.strip()
+            themes = [li.text.strip() for li in brick.select(".sections ul li")]
+            for theme in themes:
+                key = {
+                    "subject": subject,
+                    "section": section,
+                    "topic": topic,
+                    "theme": theme,
+                }
+                hassubtheme = theme.split("\n\n")
+                if len(hassubtheme) > 1:
+                    key.update({
+                        "theme": hassubtheme[0],
+                        "subtheme": hassubtheme[1],
+                    })
+                self.topics.append(key)

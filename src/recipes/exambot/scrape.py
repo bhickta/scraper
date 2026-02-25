@@ -1,8 +1,11 @@
-from utils.scraper import Scraper
-import json
+"""ExamBot recipe — scraper for exambot quiz pages."""
+
+from src.core.base_scraper import BaseScraper
 
 
-class ExamBot(Scraper):
+class ExamBot(BaseScraper):
+    """Extracts MCQ data from ExamBot quiz pages."""
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -39,19 +42,18 @@ class ExamBot(Scraper):
                     for arg in onclick.split("(")[1].split(")")[0].split(",")
                 ]
                 correct_option = args[-1]
-
                 options.append({"value": value, "label": label_text})
 
-        data.update(
-            {
+            data.update({
                 "subject": subject.text.strip() if subject else "",
                 "question": (
                     question_statement.text.strip() if question_statement else ""
                 ),
                 "correct_option": correct_option,
-                "explaination": explaination.text.strip() if explaination else "",
+                "explaination": (
+                    explaination.text.strip() if explaination else ""
+                ),
                 "options": options,
-            }
-        )
+            })
 
         return data

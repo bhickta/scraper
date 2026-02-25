@@ -1,1 +1,1 @@
-"""Services package for reusable business logic."""
+"""Services package — reusable business logic."""
